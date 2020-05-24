@@ -6,25 +6,25 @@
 
 class camera {
 public:
-  camera(point3 lookfrom, point3 lookat, vec3 vup, double vertical_fov,
-         double aperture, double focus_distance);
+  camera(point3 lookfrom, point3 lookat, vec3 vup, float vertical_fov,
+         float aperture, float focus_distance);
 
-  ray get_ray(double u, double v) const;
+  ray get_ray(float u, float v) const;
 
   int getWidth() const { return WIDTH; }
   int getHeight() const { return HEIGHT; }
 
 private:
-  static constexpr int WIDTH = 3840;
-  static constexpr int HEIGHT = 2160;
-  static constexpr double ASPECT_RATIO = double(WIDTH) / double(HEIGHT);
-  static constexpr double FOCAL_LENGTH = 1.0;
+  static constexpr int WIDTH = 1280;
+  static constexpr int HEIGHT = 720;
+  static constexpr float ASPECT_RATIO = float(WIDTH) / float(HEIGHT);
+  static constexpr float FOCAL_LENGTH = 1.0;
 
   point3 origin_;
   point3 lower_left_corner_;
   vec3 horizontal_;
   vec3 vertical_;
   vec3 u_, v_, w_;
-  double lens_radius_;
+  float lens_radius_;
 };
 #endif // CAMERA_H_

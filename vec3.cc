@@ -5,11 +5,11 @@
 #include <iostream>
 
 vec3 vec3::random() {
-  return vec3(random_double(), random_double(), random_double());
+  return vec3(random_float(), random_float(), random_float());
 }
-vec3 vec3::random(double min, double max) {
-  return vec3(random_double(min, max), random_double(min, max),
-              random_double(min, max));
+vec3 vec3::random(float min, float max) {
+  return vec3(random_float(min, max), random_float(min, max),
+              random_float(min, max));
 }
 
 vec3 vec3::random_in_unit_sphere() {
@@ -24,7 +24,7 @@ vec3 vec3::random_in_unit_sphere() {
 
 vec3 vec3::random_in_unit_disk() {
   while (true) {
-    vec3 p = vec3(random_double(-1, 1), random_double(-1, 1), 0);
+    vec3 p = vec3(random_float(-1, 1), random_float(-1, 1), 0);
     if (p.length_squared() >= 1) {
       continue;
     }
@@ -34,9 +34,9 @@ vec3 vec3::random_in_unit_disk() {
 
 vec3 vec3::random_unit_vector() {
   // Lambertian's cosine law.
-  double angle = random_double(0, 2 * pi);
-  double z = random_double(-1, 1);
-  double radiance = sqrt(1 - z * z);
+  float angle = random_float(0, 2 * pi);
+  float z = random_float(-1, 1);
+  float radiance = sqrt(1 - z * z);
   return vec3(radiance * cos(angle), radiance * sin(angle), z);
 }
 
@@ -54,13 +54,13 @@ vec3 vec3::reflect(const vec3 &v, const vec3 &n) {
   return v - 2 * dot(v, n) * n;
 }
 
-vec3 vec3::refract(const vec3 &r_in, const vec3 &n, double etai_over_etat) {
+vec3 vec3::refract(const vec3 &r_in, const vec3 &n, float etai_over_etat) {
   // Snell's Law.
   //
   // R′ = R′∥ + R′⊥
   // R′∥ = η / η′ * (R + cosθ * n)
   // R′⊥ = −√(1 - |R′∥|²) * n
-  double cos_theta = dot(-r_in, n);
+  float cos_theta = dot(-r_in, n);
   vec3 r_out_parallel = etai_over_etat * (r_in + cos_theta * n);
   vec3 r_out_perpendicular = -sqrt(1.0 - r_out_parallel.length_squared()) * n;
 
@@ -86,14 +86,14 @@ vec3 operator*(const vec3 &u, const vec3 &v) {
   return vec3(u.x() * v.x(), u.y() * v.y(), u.z() * v.z());
 }
 
-vec3 operator*(const vec3 &v, double t) {
+vec3 operator*(const vec3 &v, float t) {
   return vec3(v.x() * t, v.y() * t, v.z() * t);
 }
-vec3 operator*(double t, const vec3 &v) { return v * t; }
+vec3 operator*(float t, const vec3 &v) { return v * t; }
 
-vec3 operator/(vec3 v, double t) { return (1 / t) * v; }
+vec3 operator/(vec3 v, float t) { return (1 / t) * v; }
 
-double dot(const vec3 &u, const vec3 &v) {
+float dot(const vec3 &u, const vec3 &v) {
   return u.x() * v.x() + u.y() * v.y() + u.z() * v.z();
 }
 

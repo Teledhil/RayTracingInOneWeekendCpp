@@ -12,6 +12,34 @@
 #include "utility.h"
 #include "vec3.h"
 
+color loop_ray_color(const ray &r, const hittable_list &world, int depth) {
+  color combined_attenuation = white;
+  ray loop_ray = r;
+  for (int b = 0; b < depth; ++b) {
+    hit_record rec;
+    if (world.hit(loop_ray, 0.001, infinity, rec)) {
+      ray scattered;
+      color attenuation;
+      if (!rec.m->scatter(loop_ray, rec, attenuation, scattered)) {
+        return black;
+      }
+      loop_ray = scattered;
+      combined_attenuation = combined_attenuation * attenuation;
+    } else {
+
+      // Hits infinity
+      vec3 unit_direction = unit_vector(loop_ray.direction());
+      float t = 0.5 * (unit_direction.y() + 1.0);
+
+      // Linear Interpolation (Lerp) from white to blue
+      color sky_lerp = (1.0 - t) * white + t * blue;
+
+      return combined_attenuation * sky_lerp;
+    }
+  }
+  return black;
+}
+
 color ray_color(const ray &r, const hittable_list &world, int depth) {
   // Limit how much the ray can bounce around.
   if (depth <= 0) {
@@ -30,7 +58,7 @@ color ray_color(const ray &r, const hittable_list &world, int depth) {
 
   // Hits infinity
   vec3 unit_direction = unit_vector(r.direction());
-  double t = 0.5 * (unit_direction.y() + 1.0);
+  float t = 0.5 * (unit_direction.y() + 1.0);
 
   // Linear Interpolation (Lerp) from white to blue
   return (1.0 - t) * white + t * blue;
@@ -72,10 +100,10 @@ hittable_list random_scene() {
   // Some random mini spheres
   for (int a = -11; a < 11; a++) {
     for (int b = -11; b < 11; b++) {
-      double choose_material = random_double();
-      double mini_sphere_radius = 0.2;
-      point3 center(a + 0.9 * random_double(), mini_sphere_radius,
-                    b + 0.9 * random_double());
+      float choose_material = random_float();
+      float mini_sphere_radius = 0.2;
+      point3 center(a + 0.9 * random_float(), mini_sphere_radius,
+                    b + 0.9 * random_float());
 
       // if not too clse to the center
       if ((center - vec3(4, 0.2, 0)).length() > 0.9) {
@@ -88,7 +116,7 @@ hittable_list random_scene() {
         } else if (choose_material < 0.95) {
           // metal
           color albedo = color::random(0.5, 1);
-          double fuzziness = random_double(0, 0.2);
+          float fuzziness = random_float(0, 0.2);
           sphere_material = new metal(albedo, fuzziness);
         } else {
           // dielectric
@@ -123,8 +151,8 @@ void simple_rtx(const camera &cam, int samples_per_pixel, int max_depth,
     for (int i = 0; i < cam.getWidth(); ++i) {
       color pixel(0, 0, 0);
       for (int s = 0; s < samples_per_pixel; ++s) {
-        double u = (i + random_double()) / (cam.getWidth() - 1);
-        double v = (j + random_double()) / (cam.getHeight() - 1);
+        float u = (i + random_float()) / (cam.getWidth() - 1);
+        float v = (j + random_float()) / (cam.getHeight() - 1);
 
         ray r = cam.get_ray(u, v);
         pixel += ray_color(r, world, max_depth);
@@ -134,50 +162,43 @@ void simple_rtx(const camera &cam, int samples_per_pixel, int max_depth,
   }
 }
 
-void thread_work(const camera cam, int samples_per_pixel, int max_depth,
+void thread_work(const camera &cam, int samples_per_pixel, int max_depth,
                  const hittable_list &world,
                  std::vector<std::vector<color>> &canvas) {
   std::vector<std::vector<color>> local_canvas(
       cam.getHeight(), std::vector<color>(cam.getWidth()));
   for (int j = cam.getHeight() - 1; j >= 0; --j) {
     for (int i = 0; i < cam.getWidth(); ++i) {
-      color pixel(0, 0, 0);
+      color &pixel = local_canvas[j][i];
+      pixel = black;
       for (int s = 0; s < samples_per_pixel; ++s) {
-        double u = (i + random_double()) / (cam.getWidth() - 1);
-        double v = (j + random_double()) / (cam.getHeight() - 1);
+        float u = (i + random_float()) / (cam.getWidth() - 1);
+        float v = (j + random_float()) / (cam.getHeight() - 1);
 
         ray r = cam.get_ray(u, v);
-        pixel += ray_color(r, world, max_depth);
+        pixel += loop_ray_color(r, world, max_depth);
       }
-      local_canvas[j][i] = pixel;
     }
   }
 
   // Sync canvas
-  for (int j = cam.getHeight() - 1; j >= 0; --j) {
-    for (int i = 0; i < cam.getWidth(); ++i) {
-      canvas[j][i] = local_canvas[j][i];
-    }
-  }
+  canvas = std::move(local_canvas);
 }
 
 void parallelize_by_samples(const camera &cam, int samples_per_pixel,
                             int max_depth, const hittable_list &world) {
   const unsigned num_threads = std::thread::hardware_concurrency();
-  std::cerr << "Multithreaded mode: " << num_threads << " threads."
+  std::cerr << "multithreaded mode: " << num_threads << " threads."
             << std::endl;
 
   int samples_per_thread = samples_per_pixel / num_threads;
   std::vector<std::thread> threads;
-  std::vector<std::vector<std::vector<color>>> multicanvas(
-      num_threads, std::vector<std::vector<color>>(
-                       cam.getHeight(), std::vector<color>(cam.getWidth())));
+  std::vector<std::vector<std::vector<color>>> multicanvas(num_threads);
 
   for (unsigned thread_id = 0; thread_id < num_threads; ++thread_id) {
-    // std::cerr << "Launching thread " << thread_id << std::endl;
     std::vector<std::vector<color>> &canvas = multicanvas[thread_id];
-    threads.emplace_back(thread_work, cam, samples_per_thread, max_depth,
-                         std::cref(world), std::ref(canvas));
+    threads.emplace_back(thread_work, std::cref(cam), samples_per_thread,
+                         max_depth, std::cref(world), std::ref(canvas));
   }
 
   for (auto &t : threads) {
@@ -203,17 +224,70 @@ void parallelize_by_samples(const camera &cam, int samples_per_pixel,
   std::cerr << "Done" << std::endl;
 }
 
+void thread_work_by_line(const camera &cam, int samples_per_pixel,
+                         int max_depth, const hittable_list &world,
+                         std::vector<color> &canvas, unsigned num_threads,
+                         int thread_id) {
+
+  for (int j = cam.getHeight() - thread_id - 1; j >= 0; j -= num_threads) {
+    for (int i = 0; i < cam.getWidth(); ++i) {
+      color pixel = black;
+      for (int s = 0; s < samples_per_pixel; ++s) {
+        float u = (i + random_float()) / (cam.getWidth() - 1);
+        float v = (j + random_float()) / (cam.getHeight() - 1);
+
+        ray r = cam.get_ray(u, v);
+        pixel += loop_ray_color(r, world, max_depth);
+      }
+      canvas[j * cam.getWidth() + i] = pixel;
+    }
+  }
+}
+
+void parallelize_by_lines(const camera &cam, int samples_per_pixel,
+                          int max_depth, const hittable_list &world) {
+  const unsigned num_threads = std::thread::hardware_concurrency();
+  std::cerr << "multithreaded mode: " << num_threads << " threads."
+            << std::endl;
+  std::vector<color> canvas(cam.getWidth() * cam.getHeight());
+
+  std::vector<std::thread> threads;
+  for (unsigned thread_id = 0; thread_id < num_threads; ++thread_id) {
+    threads.emplace_back(thread_work_by_line, std::cref(cam), samples_per_pixel,
+                         max_depth, std::cref(world), std::ref(canvas),
+                         num_threads, thread_id);
+  }
+
+  for (auto &t : threads) {
+    t.join();
+  }
+  std::cerr << "All threads completed their tasks." << std::endl;
+
+  std::cerr << "Saving image... ";
+  // PPM header
+  std::cout << "P3" << std::endl;
+  std::cout << cam.getWidth() << " " << cam.getHeight() << std::endl;
+  std::cout << "255" << std::endl;
+
+  for (int j = cam.getHeight() - 1; j >= 0; --j) {
+    for (int i = 0; i < cam.getWidth(); ++i) {
+      write_color(std::cout, canvas[j * cam.getWidth() + i], samples_per_pixel);
+    }
+  }
+  std::cerr << "Done" << std::endl;
+}
+
 int main() {
-  static constexpr int SAMPLES_PER_PIXEL = 1024;
+  static constexpr int SAMPLES_PER_PIXEL = 96;
   static constexpr int MAX_DEPTH = 16;
 
   vec3 lookfrom = vec3(13, 2, 3);
   vec3 lookat = vec3(0, 0, 0);
   vec3 vup = vec3(0, 1, 0);
-  double vfov = 20;
-  double aperture = 0.1;
-  // double distance_to_focus = (lookfrom - lookat).length();
-  double distance_to_focus = 10.0;
+  float vfov = 20;
+  float aperture = 0.1;
+  // float distance_to_focus = (lookfrom - lookat).length();
+  float distance_to_focus = 10.0;
 
   camera cam(lookfrom, lookat, vup, vfov, aperture, distance_to_focus);
 
@@ -222,7 +296,8 @@ int main() {
   // hittable_list world = old_scene();
 
   // simple_rtx(cam, SAMPLES_PER_PIXEL, MAX_DEPTH, world);
-  parallelize_by_samples(cam, SAMPLES_PER_PIXEL, MAX_DEPTH, world);
+  // parallelize_by_samples(cam, SAMPLES_PER_PIXEL, MAX_DEPTH, world);
+  parallelize_by_lines(cam, SAMPLES_PER_PIXEL, MAX_DEPTH, world);
 
   return 0;
 }

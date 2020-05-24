@@ -6,14 +6,14 @@
 #include "utility.h"
 #include "vec3.h"
 
-camera::camera(point3 lookfrom, point3 lookat, vec3 vup, double vertical_fov,
-               double aperture, double focus_distance)
+camera::camera(point3 lookfrom, point3 lookat, vec3 vup, float vertical_fov,
+               float aperture, float focus_distance)
     : origin_(lookfrom) {
 
-  double theta = degrees_to_radians(vertical_fov);
-  double h = tan(theta / 2);
-  double viewport_height = 2 * h;
-  double viewport_width = ASPECT_RATIO * viewport_height;
+  float theta = degrees_to_radians(vertical_fov);
+  float h = tan(theta / 2);
+  float viewport_height = 2 * h;
+  float viewport_width = ASPECT_RATIO * viewport_height;
 
   w_ = unit_vector(lookfrom - lookat);
   u_ = unit_vector(cross(vup, w_));
@@ -27,7 +27,7 @@ camera::camera(point3 lookfrom, point3 lookat, vec3 vup, double vertical_fov,
   lens_radius_ = aperture / 2;
 }
 
-ray camera::get_ray(double u, double v) const {
+ray camera::get_ray(float u, float v) const {
   vec3 rd = lens_radius_ * vec3::random_in_unit_disk();
   vec3 offset = u_ * rd.x() + v_ * rd.y();
   return ray(origin_ + offset, lower_left_corner_ + u * horizontal_ +

@@ -6,7 +6,7 @@
 #include "ray.h"
 #include "vec3.h"
 
-metal::metal(const color &a, double f)
+metal::metal(const color &a, float f)
     : albedo_(a), fuzziness_(f > 1 ? 1 : f) {}
 
 bool metal::scatter(const ray &r_in, const hit_record &rec, color &attenuation,

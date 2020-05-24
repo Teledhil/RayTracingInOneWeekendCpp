@@ -5,13 +5,13 @@
 void write_color(std::ostream &stream, const color &pixel,
                  int samples_per_pixel) {
 
-  double r = pixel.x();
-  double g = pixel.y();
-  double b = pixel.z();
+  float r = pixel.x();
+  float g = pixel.y();
+  float b = pixel.z();
 
   // Divide the color total by the number of samples and gamma-correct it.
   // gamma = 2.0 --> square root.
-  double scale = 1.0 / samples_per_pixel;
+  float scale = 1.0 / samples_per_pixel;
   r = sqrt(scale * r);
   g = sqrt(scale * g);
   b = sqrt(scale * b);

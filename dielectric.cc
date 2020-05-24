@@ -6,13 +6,13 @@
 #include "utility.h"
 #include "vec3.h"
 
-dielectric::dielectric(double ri) : refraction_index_(ri) {}
+dielectric::dielectric(float ri) : refraction_index_(ri) {}
 
 bool dielectric::scatter(const ray &r_in, const hit_record &rec,
                          color &attenuation, ray &scattered) const {
 
 
-  double etai_over_etat;
+  float etai_over_etat;
   if (rec.front_face) {
     etai_over_etat = AIR_REFRACTION_INDEX / refraction_index_;
   } else {
@@ -20,11 +20,11 @@ bool dielectric::scatter(const ray &r_in, const hit_record &rec,
   }
 
   vec3 unit_direction = unit_vector(r_in.direction());
-  double cos_theta = fmin(1.0, dot(-unit_direction, rec.normal));
-  double sin_theta = sqrt(1.0 - cos_theta * cos_theta);
+  float cos_theta = fmin(1.0, dot(-unit_direction, rec.normal));
+  float sin_theta = sqrt(1.0 - cos_theta * cos_theta);
 
   if ((etai_over_etat * sin_theta > 1.0) ||
-      (random_double() < schlick(cos_theta, etai_over_etat))) {
+      (random_float() < schlick(cos_theta, etai_over_etat))) {
     // Reflection: Either the incidence angle is to great or the specular
     // reflection happens.
     vec3 reflected = vec3::reflect(unit_direction, rec.normal);
@@ -39,12 +39,12 @@ bool dielectric::scatter(const ray &r_in, const hit_record &rec,
   return true;
 }
 
-double dielectric::schlick(double cosine, double refraction_index) {
+float dielectric::schlick(float cosine, float refraction_index) {
   // https://en.wikipedia.org/wiki/Schlick%27s_approximation
   //
   // TODO: Only works when the other material is air?
   //
-  double r0 = (1 - refraction_index) / (1 + refraction_index);
+  float r0 = (1 - refraction_index) / (1 + refraction_index);
   r0 = r0 * r0;
   return r0 + (1 - r0) * pow(1 - cosine, 5);
 }

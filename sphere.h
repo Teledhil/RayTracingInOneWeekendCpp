@@ -9,18 +9,18 @@
 class sphere : public hittable {
 public:
   // sphere();
-  sphere(point3 c, double r, material *m);
+  sphere(point3 c, float r, material *m);
   ~sphere();
 
-  bool hit(const ray &r, double t_min, double t_max,
+  bool hit(const ray &r, float t_min, float t_max,
            hit_record &rec) const override;
 
   const point3 &center() const { return center_; }
-  double radius() const { return radius_; }
+  float radius() const { return radius_; }
 
 private:
   point3 center_;
-  double radius_;
+  float radius_;
   material *material_;
 };
 

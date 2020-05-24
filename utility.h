@@ -3,14 +3,14 @@
 
 #include <limits>
 
-static constexpr double infinity = std::numeric_limits<double>::infinity();
-static constexpr double pi = 3.1415926535897932385;
+static constexpr float infinity = std::numeric_limits<float>::infinity();
+static constexpr float pi = 3.1415926535897932385;
 
-double degrees_to_radians(double degrees);
+float degrees_to_radians(float degrees);
 
-double random_double();
-double random_double(double min, double max);
+float random_float();
+float random_float(float min, float max);
 
-double clamp(double x, double min, double max);
+float clamp(float x, float min, float max);
 
 #endif // UTILITY_H_
