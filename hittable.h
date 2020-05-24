@@ -13,7 +13,17 @@ struct hit_record {
   float t;
   bool front_face;
 
-  void set_face_normal(const ray &r, const vec3 &outward_normal);
+  void set_face_normal(const ray &r, const vec3 &outward_normal) {
+    if (dot(r.direction(), outward_normal) < 0) {
+      // Ray is outside the sphere
+      front_face = true;
+      normal = outward_normal;
+    } else {
+      // Ray is inside the sphere
+      front_face = false;
+      normal = -outward_normal;
+    }
+  }
 };
 
 class hittable {

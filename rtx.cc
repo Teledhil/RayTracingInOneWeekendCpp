@@ -12,34 +12,6 @@
 #include "utility.h"
 #include "vec3.h"
 
-color loop_ray_color(const ray &r, const hittable_list &world, int depth) {
-  color combined_attenuation = white;
-  ray loop_ray = r;
-  for (int b = 0; b < depth; ++b) {
-    hit_record rec;
-    if (world.hit(loop_ray, 0.001, infinity, rec)) {
-      ray scattered;
-      color attenuation;
-      if (!rec.m->scatter(loop_ray, rec, attenuation, scattered)) {
-        return black;
-      }
-      loop_ray = scattered;
-      combined_attenuation = combined_attenuation * attenuation;
-    } else {
-
-      // Hits infinity
-      vec3 unit_direction = unit_vector(loop_ray.direction());
-      float t = 0.5 * (unit_direction.y() + 1.0);
-
-      // Linear Interpolation (Lerp) from white to blue
-      color sky_lerp = (1.0 - t) * white + t * blue;
-
-      return combined_attenuation * sky_lerp;
-    }
-  }
-  return black;
-}
-
 color ray_color(const ray &r, const hittable_list &world, int depth) {
   // Limit how much the ray can bounce around.
   if (depth <= 0) {
@@ -111,11 +83,11 @@ hittable_list random_scene() {
         sphere *mini_sphere;
         if (choose_material < 0.8) {
           // diffuse
-          color albedo = color::random() * color::random();
+          color albedo = random_vec3() * random_vec3();
           sphere_material = new lambertian(albedo);
         } else if (choose_material < 0.95) {
           // metal
-          color albedo = color::random(0.5, 1);
+          color albedo = random_vec3(0.5, 1);
           float fuzziness = random_float(0, 0.2);
           sphere_material = new metal(albedo, fuzziness);
         } else {
@@ -176,7 +148,7 @@ void thread_work(const camera &cam, int samples_per_pixel, int max_depth,
         float v = (j + random_float()) / (cam.getHeight() - 1);
 
         ray r = cam.get_ray(u, v);
-        pixel += loop_ray_color(r, world, max_depth);
+        pixel += ray_color(r, world, max_depth);
       }
     }
   }
@@ -237,7 +209,7 @@ void thread_work_by_line(const camera &cam, int samples_per_pixel,
         float v = (j + random_float()) / (cam.getHeight() - 1);
 
         ray r = cam.get_ray(u, v);
-        pixel += loop_ray_color(r, world, max_depth);
+        pixel += ray_color(r, world, max_depth);
       }
       canvas[j * cam.getWidth() + i] = pixel;
     }
