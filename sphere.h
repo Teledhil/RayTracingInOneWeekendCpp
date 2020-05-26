@@ -8,10 +8,11 @@
 
 class sphere : public hittable {
 public:
-  // sphere();
   sphere(point3 c, float r, material *m)
       : center_(c), radius_(r), material_(m) {}
-  ~sphere() { delete material_; }
+  ~sphere() {
+    delete material_;
+  }
 
   bool hit(const ray &r, float t_min, float t_max,
            hit_record &rec) const override {
@@ -56,6 +57,14 @@ public:
     }
 
     return false;
+  }
+
+  bool bounding_box(float t0 __attribute__((unused)),
+                    float t1 __attribute__((unused)),
+                    aabb &output_box) const override {
+    output_box = aabb(center_ - vec3(radius_, radius_, radius_),
+                      center_ + vec3(radius_, radius_, radius_));
+    return true;
   }
 
   const point3 &center() const { return center_; }

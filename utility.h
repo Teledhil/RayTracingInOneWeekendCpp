@@ -27,6 +27,8 @@ float random_float(float min, float max) {
   return min + (max - min) * random_float();
 }
 
+int random_int(int min, int max) { return min + (max - min) * random_float(); }
+
 float clamp(float x, float min, float max) {
   if (x < min) {
     return min;

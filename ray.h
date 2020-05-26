@@ -7,7 +7,6 @@ class ray {
 public:
   ray() = default;
   ray(const point3 &o, const vec3 &d) : origin_(o), direction_(d) {}
-  ray(const ray &) = default;
   ray(ray &&) = default;
   ~ray() = default;
   ray &operator=(const ray &) = delete;

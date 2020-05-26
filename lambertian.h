@@ -14,6 +14,9 @@ public:
   bool scatter(const ray &r_in __attribute__((unused)), const hit_record &rec,
                color &attenuation, ray &scattered) const override {
     vec3 scatter_direction = rec.normal + random_unit_vector();
+    while (scatter_direction == vec3(0, 0, 0)) {
+      scatter_direction = rec.normal + random_unit_vector();
+    }
 
     // scattered = ray(rec.p, scatter_direction);
     scattered.origin(rec.p);

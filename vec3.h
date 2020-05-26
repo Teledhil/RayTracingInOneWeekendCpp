@@ -11,13 +11,6 @@ class vec3 {
   public:
     vec3() : v{0, 0, 0} {}
     vec3(float x, float y, float z) : v{x, y, z} {}
-    vec3(const vec3 &other) {
-      v[0] = other.v[0];
-      v[1] = other.v[1];
-      v[2] = other.v[2];
-    }
-    vec3 &operator=(const vec3 &) = default;
-    vec3 &operator=(vec3 &) = default;
 
     float x() const { return v[0]; }
     float y() const { return v[1]; }
@@ -48,6 +41,33 @@ class vec3 {
     }
     float length() const { return std::sqrt(length_squared()); }
 
+    bool is_bad() const {
+      // To check if some value is NaN.
+      if (v[0] != v[0]) {
+        return true;
+      }
+      if (v[1] != v[1]) {
+        return true;
+      }
+      if (v[2] != v[2]) {
+        return true;
+      }
+      return false;
+    }
+
+    bool operator==(const vec3 &o) const {
+      if (v[0] != o.v[0]) {
+        return false;
+      }
+      if (v[1] != o.v[1]) {
+        return false;
+      }
+      if (v[2] != o.v[2]) {
+        return false;
+      }
+
+      return true;
+    }
 
   private:
     float v[3];

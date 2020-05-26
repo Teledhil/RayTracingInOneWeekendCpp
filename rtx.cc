@@ -1,6 +1,7 @@
 #include <iostream>
 #include <thread>
 
+#include "bvh.h"
 #include "camera.h"
 #include "color.h"
 #include "dielectric.h"
@@ -56,8 +57,8 @@ hittable_list old_scene() {
   //                     new dielectric(dielectric::GLASS_REFRACTION_INDEX)));
   world.add(new sphere(point3(1, 0, -1), 0.5, // bubble
                        new dielectric(dielectric::GLASS_REFRACTION_INDEX)));
-  world.add(new sphere(point3(1, 0, -1), -0.45, // bubble
-                       new dielectric(dielectric::GLASS_REFRACTION_INDEX)));
+  // world.add(new sphere(point3(1, 0, -1), -0.45, // bubble
+  //                     new dielectric(dielectric::GLASS_REFRACTION_INDEX)));
 
   return world;
 }
@@ -134,9 +135,9 @@ void simple_rtx(const camera &cam, int samples_per_pixel, int max_depth,
   }
 }
 
-void thread_work(const camera &cam, int samples_per_pixel, int max_depth,
-                 const hittable_list &world,
-                 std::vector<std::vector<color>> &canvas) {
+void thread_work_by_sample(const camera &cam, int samples_per_pixel,
+                           int max_depth, const hittable_list &world,
+                           std::vector<std::vector<color>> &canvas) {
   std::vector<std::vector<color>> local_canvas(
       cam.getHeight(), std::vector<color>(cam.getWidth()));
   for (int j = cam.getHeight() - 1; j >= 0; --j) {
@@ -169,8 +170,9 @@ void parallelize_by_samples(const camera &cam, int samples_per_pixel,
 
   for (unsigned thread_id = 0; thread_id < num_threads; ++thread_id) {
     std::vector<std::vector<color>> &canvas = multicanvas[thread_id];
-    threads.emplace_back(thread_work, std::cref(cam), samples_per_thread,
-                         max_depth, std::cref(world), std::ref(canvas));
+    threads.emplace_back(thread_work_by_sample, std::cref(cam),
+                         samples_per_thread, max_depth, std::cref(world),
+                         std::ref(canvas));
   }
 
   for (auto &t : threads) {
@@ -266,6 +268,9 @@ int main() {
   // World objects
   hittable_list world = random_scene();
   // hittable_list world = old_scene();
+  std::cerr << "Building optimized world... ";
+  world.optimize_bvh();
+  std::cerr << "Done" << std::endl;
 
   // simple_rtx(cam, SAMPLES_PER_PIXEL, MAX_DEPTH, world);
   // parallelize_by_samples(cam, SAMPLES_PER_PIXEL, MAX_DEPTH, world);

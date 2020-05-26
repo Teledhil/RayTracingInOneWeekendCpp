@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include "aabb.h"
+#include "bvh.h"
 #include "hittable.h"
 
 class hittable_list {
@@ -36,7 +38,30 @@ public:
     return hit_anything;
   }
 
-private:
+  bool bounding_box(float t0, float t1, aabb &output_box) const {
+    if (objects_.empty()) {
+      return false;
+    }
+
+    aabb temp_box;
+    bool first_box = true;
+    for (const auto o : objects_) {
+      if (!o->bounding_box(t0, t1, temp_box)) {
+        return false;
+      }
+      output_box = first_box ? temp_box : surrounding_box(output_box, temp_box);
+      first_box = false;
+    }
+    return true;
+  }
+
+  void optimize_bvh() {
+    bvh_node *bvh = new bvh_node(objects_, 0, objects_.size(), 0.0, 1.0);
+    objects_.clear();
+    objects_.emplace_back(bvh);
+  }
+
+public:
   std::vector<hittable *> objects_;
 };
 
