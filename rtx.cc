@@ -3,12 +3,14 @@
 
 #include "bvh.h"
 #include "camera.h"
+#include "checker_texture.h"
 #include "color.h"
 #include "dielectric.h"
 #include "hittable_list.h"
 #include "lambertian.h"
 #include "metal.h"
 #include "ray.h"
+#include "solid_color.h"
 #include "sphere.h"
 #include "utility.h"
 #include "vec3.h"
@@ -41,11 +43,11 @@ hittable_list old_scene() {
   // World objects
   hittable_list world;
   // center sphere
-  world.add(
-      new sphere(point3(0, 0, -1), 0.5, new lambertian(color(0.1, 0.2, 0.5))));
+  world.add(new sphere(point3(0, 0, -1), 0.5,
+                       new lambertian(new solid_color(0.1, 0.2, 0.5))));
   // the earth
   world.add(new sphere(point3(0, -100.5, -1), 100,
-                       new lambertian(color(0.8, 0.8, 0.0))));
+                       new lambertian(new solid_color(0.8, 0.8, 0.0))));
   // mettalic spheres
   // world.add(
   //    new sphere(point3(1, 0, -1), 0.5, new metal(color(0.8, 0.6, 0.2),
@@ -67,7 +69,9 @@ hittable_list random_scene() {
   hittable_list world;
 
   // The Ground
-  material *ground_material = new lambertian(color(0.5, 0.5, 0.5));
+  texture *ground_texture = new checker_texture(new solid_color(0.2, 0.3, 0.1),
+                                                new solid_color(0.9, 0.9, 0.9));
+  material *ground_material = new lambertian(ground_texture);
   world.add(new sphere(point3(0, -1000.0, 0), 1000, ground_material));
 
   // Some random mini spheres
@@ -84,8 +88,8 @@ hittable_list random_scene() {
         sphere *mini_sphere;
         if (choose_material < 0.8) {
           // diffuse
-          color albedo = random_vec3() * random_vec3();
-          sphere_material = new lambertian(albedo);
+          const color albedo = random_vec3() * random_vec3();
+          sphere_material = new lambertian(new solid_color(albedo));
         } else if (choose_material < 0.95) {
           // metal
           color albedo = random_vec3(0.5, 1);
@@ -104,7 +108,7 @@ hittable_list random_scene() {
   // The Big 3
   material *material1 = new dielectric(dielectric::GLASS_REFRACTION_INDEX);
   world.add(new sphere(point3(0, 1, 0), 1.0, material1));
-  material *material2 = new lambertian(color(0.4, 0.2, 0.1));
+  material *material2 = new lambertian(new solid_color(0.4, 0.2, 0.1));
   world.add(new sphere(point3(-4, 1, 0), 1.0, material2));
   material *material3 = new metal(color(0.7, 0.6, 0.5), 0.0);
   world.add(new sphere(point3(4, 1, 0), 1.0, material3));

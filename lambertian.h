@@ -5,11 +5,13 @@
 #include "hittable.h"
 #include "material.h"
 #include "ray.h"
+#include "texture.h"
 #include "vec3.h"
 
 class lambertian : public material {
 public:
-  lambertian(const color &a) : albedo_(a) {}
+  lambertian(const texture *a) : albedo_(a) {}
+  ~lambertian() { delete albedo_; }
 
   bool scatter(const ray &r_in __attribute__((unused)), const hit_record &rec,
                color &attenuation, ray &scattered) const override {
@@ -23,12 +25,12 @@ public:
     scattered.direction(scatter_direction);
 
     // TODO: make darker colors to have lower albedo values.
-    attenuation = albedo_;
+    attenuation = albedo_->value(rec.u, rec.v, rec.p);
 
     return true;
   }
 
 private:
-  color albedo_;
+  const texture *albedo_;
 };
 #endif // LAMBERTIAN_H_

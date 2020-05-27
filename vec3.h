@@ -111,7 +111,12 @@ vec3 cross(const vec3 &u, const vec3 &v) {
               u.x() * v.y() - u.y() * v.x());
 }
 
-vec3 unit_vector(vec3 v) { return v / v.length(); }
+vec3 unit_vector(vec3 v) {
+  if (0 == v.length()) {
+    std::cerr << "zero division" << std::endl;
+  }
+  return v / v.length();
+}
 
 vec3 random_vec3() {
   return vec3(random_float(), random_float(), random_float());
