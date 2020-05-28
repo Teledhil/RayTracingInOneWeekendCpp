@@ -9,6 +9,7 @@
 #include "hittable_list.h"
 #include "lambertian.h"
 #include "metal.h"
+#include "noise_texture.h"
 #include "ray.h"
 #include "solid_color.h"
 #include "sphere.h"
@@ -113,6 +114,18 @@ hittable_list random_scene() {
   material *material3 = new metal(color(0.7, 0.6, 0.5), 0.0);
   world.add(new sphere(point3(4, 1, 0), 1.0, material3));
 
+  return world;
+}
+
+hittable_list two_perlin_spheres() {
+  hittable_list world;
+
+  // texture *perlin_texture = new noise_texture();
+
+  world.add(new sphere(point3(0, -1000, 0), 1000,
+                       new lambertian(new noise_texture(2.0))));
+  world.add(
+      new sphere(point3(0, 2, 0), 2, new lambertian(new noise_texture(10.0))));
   return world;
 }
 
@@ -259,18 +272,27 @@ int main() {
   static constexpr int SAMPLES_PER_PIXEL = 96;
   static constexpr int MAX_DEPTH = 16;
 
-  vec3 lookfrom = vec3(13, 2, 3);
-  vec3 lookat = vec3(0, 0, 0);
-  vec3 vup = vec3(0, 1, 0);
+  // point3 lookfrom = vec3(13, 2, 3);
+  // point3 lookat = vec3(0, 0, 0);
+  // vec3 vup = vec3(0, 1, 0);
+  // float vfov = 20;
+  // float aperture = 0.1;
+  //// float distance_to_focus = (lookfrom - lookat).length();
+  // float distance_to_focus = 10.0;
+
+  // camera for two perlin spheres
+  point3 lookfrom(13, 2, 3);
+  point3 lookat(0, 0, 0);
+  vec3 vup(0, 1, 0);
   float vfov = 20;
-  float aperture = 0.1;
-  // float distance_to_focus = (lookfrom - lookat).length();
   float distance_to_focus = 10.0;
+  float aperture = 0.1;
 
   camera cam(lookfrom, lookat, vup, vfov, aperture, distance_to_focus);
 
   // World objects
-  hittable_list world = random_scene();
+  // hittable_list world = random_scene();
+  hittable_list world = two_perlin_spheres();
   // hittable_list world = old_scene();
   std::cerr << "Building optimized world... ";
   world.optimize_bvh();
