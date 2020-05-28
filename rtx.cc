@@ -7,6 +7,7 @@
 #include "color.h"
 #include "dielectric.h"
 #include "hittable_list.h"
+#include "image_texture.h"
 #include "lambertian.h"
 #include "metal.h"
 #include "noise_texture.h"
@@ -109,7 +110,7 @@ hittable_list random_scene() {
   // The Big 3
   material *material1 = new dielectric(dielectric::GLASS_REFRACTION_INDEX);
   world.add(new sphere(point3(0, 1, 0), 1.0, material1));
-  material *material2 = new lambertian(new solid_color(0.4, 0.2, 0.1));
+  material *material2 = new lambertian(new image_texture("earthmap.jpg"));
   world.add(new sphere(point3(-4, 1, 0), 1.0, material2));
   material *material3 = new metal(color(0.7, 0.6, 0.5), 0.0);
   world.add(new sphere(point3(4, 1, 0), 1.0, material3));
@@ -126,6 +127,14 @@ hittable_list two_perlin_spheres() {
                        new lambertian(new noise_texture(2.0))));
   world.add(
       new sphere(point3(0, 2, 0), 2, new lambertian(new noise_texture(10.0))));
+  return world;
+}
+
+hittable_list the_earth() {
+  hittable_list world;
+  world.add(new sphere(point3(0, 2, 0), 2,
+                       new lambertian(new image_texture("earthmap.jpg"))));
+
   return world;
 }
 
@@ -272,27 +281,28 @@ int main() {
   static constexpr int SAMPLES_PER_PIXEL = 96;
   static constexpr int MAX_DEPTH = 16;
 
-  // point3 lookfrom = vec3(13, 2, 3);
-  // point3 lookat = vec3(0, 0, 0);
-  // vec3 vup = vec3(0, 1, 0);
-  // float vfov = 20;
-  // float aperture = 0.1;
-  //// float distance_to_focus = (lookfrom - lookat).length();
-  // float distance_to_focus = 10.0;
+  point3 lookfrom = vec3(13, 2, 3);
+  point3 lookat = vec3(0, 0, 0);
+  vec3 vup = vec3(0, 1, 0);
+  float vfov = 20;
+  float aperture = 0.1;
+  // float distance_to_focus = (lookfrom - lookat).length();
+  float distance_to_focus = 10.0;
 
   // camera for two perlin spheres
-  point3 lookfrom(13, 2, 3);
-  point3 lookat(0, 0, 0);
-  vec3 vup(0, 1, 0);
-  float vfov = 20;
-  float distance_to_focus = 10.0;
-  float aperture = 0.1;
+  // point3 lookfrom(13, 2, 3);
+  // point3 lookat(0, 0, 0);
+  // vec3 vup(0, 1, 0);
+  // float vfov = 20;
+  // float distance_to_focus = 10.0;
+  // float aperture = 0.1;
 
   camera cam(lookfrom, lookat, vup, vfov, aperture, distance_to_focus);
 
   // World objects
-  // hittable_list world = random_scene();
-  hittable_list world = two_perlin_spheres();
+  hittable_list world = random_scene();
+  // hittable_list world = the_earth();
+  // hittable_list world = two_perlin_spheres();
   // hittable_list world = old_scene();
   std::cerr << "Building optimized world... ";
   world.optimize_bvh();
