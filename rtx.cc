@@ -6,6 +6,7 @@
 #include "checker_texture.h"
 #include "color.h"
 #include "dielectric.h"
+#include "diffuse_light.h"
 #include "hittable_list.h"
 #include "image_texture.h"
 #include "lambertian.h"
@@ -24,21 +25,25 @@ color ray_color(const ray &r, const hittable_list &world, int depth) {
   }
 
   hit_record rec;
-  if (world.hit(r, 0.001, infinity, rec)) {
-    ray scattered;
-    color attenuation;
-    if (rec.m->scatter(r, rec, attenuation, scattered)) {
-      return attenuation * ray_color(scattered, world, depth - 1);
-    }
+  if (!world.hit(r, 0.001, infinity, rec)) {
+    // or color background.
     return black;
   }
 
-  // Hits infinity
-  vec3 unit_direction = unit_vector(r.direction());
-  float t = 0.5 * (unit_direction.y() + 1.0);
+  color emitted = rec.m->emitted(rec.u, rec.v, rec.p);
+  ray scattered;
+  color attenuation;
+  if (!rec.m->scatter(r, rec, attenuation, scattered)) {
+    return emitted;
+  }
+  return emitted + attenuation * ray_color(scattered, world, depth - 1);
 
-  // Linear Interpolation (Lerp) from white to blue
-  return (1.0 - t) * white + t * blue;
+  //// Hits infinity
+  // vec3 unit_direction = unit_vector(r.direction());
+  // float t = 0.5 * (unit_direction.y() + 1.0);
+
+  //// Linear Interpolation (Lerp) from white to blue
+  // return (1.0 - t) * white + t * blue;
 }
 
 hittable_list old_scene() {
@@ -84,14 +89,18 @@ hittable_list random_scene() {
       point3 center(a + 0.9 * random_float(), mini_sphere_radius,
                     b + 0.9 * random_float());
 
-      // if not too clse to the center
+      // if not too close to the center
       if ((center - vec3(4, 0.2, 0)).length() > 0.9) {
         material *sphere_material;
         sphere *mini_sphere;
-        if (choose_material < 0.8) {
+        point3 light_offset(0, 0, 0);
+        if (choose_material < 0.7) {
           // diffuse
           const color albedo = random_vec3() * random_vec3();
           sphere_material = new lambertian(new solid_color(albedo));
+        } else if (choose_material < 0.8) {
+          sphere_material = new diffuse_light(new solid_color(white));
+          light_offset = point3(0, 2, 0);
         } else if (choose_material < 0.95) {
           // metal
           color albedo = random_vec3(0.5, 1);
@@ -101,7 +110,8 @@ hittable_list random_scene() {
           // dielectric
           sphere_material = new dielectric(dielectric::GLASS_REFRACTION_INDEX);
         }
-        mini_sphere = new sphere(center, mini_sphere_radius, sphere_material);
+        mini_sphere = new sphere(center + light_offset, mini_sphere_radius,
+                                 sphere_material);
         world.add(mini_sphere);
       }
     }
