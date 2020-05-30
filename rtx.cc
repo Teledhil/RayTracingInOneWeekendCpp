@@ -1,6 +1,8 @@
 #include <iostream>
 #include <thread>
+#include <vector>
 
+#include "box.h"
 #include "bvh.h"
 #include "camera.h"
 #include "checker_texture.h"
@@ -203,6 +205,24 @@ hittable_list cornell_box() {
   // light
   world.add(new xz_rect(213, 343, 554, 227, 332,
                         new diffuse_light(new solid_color(color(15, 15, 15)))));
+
+  std::vector<material *> m1;
+  m1.emplace_back(new lambertian(new solid_color(color(.73, .73, .73))));
+  m1.emplace_back(new lambertian(new solid_color(color(.73, .73, .73))));
+  m1.emplace_back(new lambertian(new solid_color(color(.73, .73, .73))));
+  m1.emplace_back(new lambertian(new solid_color(color(.73, .73, .73))));
+  m1.emplace_back(new lambertian(new solid_color(color(.73, .73, .73))));
+  m1.emplace_back(new lambertian(new solid_color(color(.73, .73, .73))));
+  world.add(new box(point3(30, 0, 65), point3(295, 165, 230), m1));
+
+  std::vector<material *> m2;
+  m2.emplace_back(new lambertian(new solid_color(color(.73, .73, .73))));
+  m2.emplace_back(new lambertian(new solid_color(color(.73, .73, .73))));
+  m2.emplace_back(new lambertian(new solid_color(color(.73, .73, .73))));
+  m2.emplace_back(new lambertian(new solid_color(color(.73, .73, .73))));
+  m2.emplace_back(new lambertian(new solid_color(color(.73, .73, .73))));
+  m2.emplace_back(new lambertian(new solid_color(color(.73, .73, .73))));
+  world.add(new box(point3(265, 0, 295), point3(430, 330, 460), m2));
 
   return world;
 }
