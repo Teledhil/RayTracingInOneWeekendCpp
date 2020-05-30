@@ -16,8 +16,10 @@
 #include "metal.h"
 #include "noise_texture.h"
 #include "ray.h"
+#include "rotate_y.h"
 #include "solid_color.h"
 #include "sphere.h"
+#include "translate.h"
 #include "utility.h"
 #include "vec3.h"
 #include "xy_rect.h"
@@ -213,7 +215,11 @@ hittable_list cornell_box() {
   m1.emplace_back(new lambertian(new solid_color(color(.73, .73, .73))));
   m1.emplace_back(new lambertian(new solid_color(color(.73, .73, .73))));
   m1.emplace_back(new lambertian(new solid_color(color(.73, .73, .73))));
-  world.add(new box(point3(30, 0, 65), point3(295, 165, 230), m1));
+  hittable *box1 = new box(point3(0, 0, 0), point3(165, 330, 165), m1);
+  box1 = new rotate_y(box1, 15);
+  box1 = new translate(box1, vec3(265, 0, 295));
+
+  world.add(box1);
 
   std::vector<material *> m2;
   m2.emplace_back(new lambertian(new solid_color(color(.73, .73, .73))));
@@ -222,7 +228,10 @@ hittable_list cornell_box() {
   m2.emplace_back(new lambertian(new solid_color(color(.73, .73, .73))));
   m2.emplace_back(new lambertian(new solid_color(color(.73, .73, .73))));
   m2.emplace_back(new lambertian(new solid_color(color(.73, .73, .73))));
-  world.add(new box(point3(265, 0, 295), point3(430, 330, 460), m2));
+  hittable *box2 = new box(point3(0, 0, 0), point3(165, 165, 165), m2);
+  box2 = new rotate_y(box2, -18);
+  box2 = new translate(box2, vec3(130, 0, 65));
+  world.add(box2);
 
   return world;
 }
