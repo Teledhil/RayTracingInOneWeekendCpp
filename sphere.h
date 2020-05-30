@@ -3,6 +3,7 @@
 
 #include <math.h>
 
+#include "aabb.h"
 #include "hittable.h"
 #include "material.h"
 #include "ray.h"

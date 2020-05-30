@@ -23,7 +23,7 @@ struct hit_record {
     } else {
       // Ray is inside the sphere
       front_face = false;
-      normal = -outward_normal;
+      normal = -1 * outward_normal;
     }
   }
 };

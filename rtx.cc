@@ -7,6 +7,7 @@
 #include "color.h"
 #include "dielectric.h"
 #include "diffuse_light.h"
+#include "flip_face.h"
 #include "hittable_list.h"
 #include "image_texture.h"
 #include "lambertian.h"
@@ -17,6 +18,9 @@
 #include "sphere.h"
 #include "utility.h"
 #include "vec3.h"
+#include "xy_rect.h"
+#include "xz_rect.h"
+#include "yz_rect.h"
 
 color ray_color(const ray &r, const hittable_list &world, int depth) {
   // Limit how much the ray can bounce around.
@@ -100,7 +104,7 @@ hittable_list random_scene() {
           sphere_material = new lambertian(new solid_color(albedo));
         } else if (choose_material < 0.8) {
           sphere_material = new diffuse_light(new solid_color(white));
-          light_offset = point3(0, 2, 0);
+          light_offset = point3(0, 2.5, 0);
         } else if (choose_material < 0.95) {
           // metal
           color albedo = random_vec3(0.5, 1);
@@ -137,6 +141,29 @@ hittable_list two_perlin_spheres() {
                        new lambertian(new noise_texture(2.0))));
   world.add(
       new sphere(point3(0, 2, 0), 2, new lambertian(new noise_texture(10.0))));
+
+  material *difflight_rectangle =
+      new diffuse_light(new solid_color(color(4, 4, 4)));
+  world.add(new xy_rect(1, 3, 1, 3, -2, difflight_rectangle));
+  material *difflight_rectangle_2 =
+      new diffuse_light(new solid_color(color(4, 4, 4)));
+  world.add(new xy_rect(1, 3, 1, 3, 2, difflight_rectangle_2));
+
+  material *difflight_rectangle2 =
+      new diffuse_light(new solid_color(color(4, 4, 4)));
+  world.add(new xz_rect(1, 3, 2, 1, 3, difflight_rectangle2));
+
+  material *difflight_rectangle3 =
+      new diffuse_light(new solid_color(color(4, 4, 4)));
+  world.add(new yz_rect(2, 1, 3, 1, 3, difflight_rectangle3));
+  material *difflight_rectangle32 =
+      new diffuse_light(new solid_color(color(4, 4, 4)));
+  world.add(new yz_rect(-2, 1, 3, 1, 3, difflight_rectangle32));
+
+  material *difflight_sphere =
+      new diffuse_light(new solid_color(color(4, 4, 4)));
+  world.add(new sphere(point3(0, 7, 0), 2, difflight_sphere));
+
   return world;
 }
 
@@ -144,6 +171,38 @@ hittable_list the_earth() {
   hittable_list world;
   world.add(new sphere(point3(0, 2, 0), 2,
                        new lambertian(new image_texture("earthmap.jpg"))));
+
+  return world;
+}
+
+hittable_list cornell_box() {
+  hittable_list world;
+
+  // back
+  world.add(new xy_rect(0, 555, 0, 555, 555,
+                        new lambertian(new solid_color(color(.73, .73, .73)))));
+
+  // bottom
+  world.add(new xz_rect(0, 555, 0, 0, 555,
+                        new lambertian(new solid_color(color(.73, .73, .73)))));
+
+  // top
+  world.add(new flip_face(
+      new xz_rect(0, 555, 555, 0, 555,
+                  new lambertian(new solid_color(color(.73, .73, .73))))));
+
+  // left
+  world.add(new flip_face(
+      new yz_rect(0, 0, 555, 0, 555,
+                  new lambertian(new solid_color(color(.12, .45, .15))))));
+
+  // right
+  world.add(new yz_rect(555, 0, 555, 0, 555,
+                        new lambertian(new solid_color(color(.65, .05, .05)))));
+
+  // light
+  world.add(new xz_rect(213, 343, 554, 227, 332,
+                        new diffuse_light(new solid_color(color(15, 15, 15)))));
 
   return world;
 }
@@ -288,18 +347,21 @@ void parallelize_by_lines(const camera &cam, int samples_per_pixel,
 }
 
 int main() {
-  static constexpr int SAMPLES_PER_PIXEL = 96;
+  static constexpr int SAMPLES_PER_PIXEL = 1000;
   static constexpr int MAX_DEPTH = 16;
 
-  point3 lookfrom = vec3(13, 2, 3);
-  point3 lookat = vec3(0, 0, 0);
-  vec3 vup = vec3(0, 1, 0);
-  float vfov = 20;
-  float aperture = 0.1;
-  // float distance_to_focus = (lookfrom - lookat).length();
-  float distance_to_focus = 10.0;
+  // camera for random scene
+  //
+  // point3 lookfrom = vec3(13, 2, 3);
+  // point3 lookat = vec3(0, 0, 0);
+  // vec3 vup = vec3(0, 1, 0);
+  // float vfov = 20;
+  // float aperture = 0.01;
+  //// float distance_to_focus = (lookfrom - lookat).length();
+  // float distance_to_focus = 10.0;
 
   // camera for two perlin spheres
+  //
   // point3 lookfrom(13, 2, 3);
   // point3 lookat(0, 0, 0);
   // vec3 vup(0, 1, 0);
@@ -307,12 +369,23 @@ int main() {
   // float distance_to_focus = 10.0;
   // float aperture = 0.1;
 
+  // camera for cornell_box
+  //
+  point3 lookfrom(278, 278, -800);
+  point3 lookat(278, 278, 0);
+  vec3 vup(0, 1, 0);
+  float vfov = 40.0;
+  float distance_to_focus = 10.0;
+  float aperture = 0.0;
+
   camera cam(lookfrom, lookat, vup, vfov, aperture, distance_to_focus);
 
   // World objects
-  hittable_list world = random_scene();
+  //
+  // hittable_list world = random_scene();
   // hittable_list world = the_earth();
   // hittable_list world = two_perlin_spheres();
+  hittable_list world = cornell_box();
   // hittable_list world = old_scene();
   std::cerr << "Building optimized world... ";
   world.optimize_bvh();
