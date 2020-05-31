@@ -7,6 +7,7 @@
 #include "camera.h"
 #include "checker_texture.h"
 #include "color.h"
+#include "constant_medium.h"
 #include "dielectric.h"
 #include "diffuse_light.h"
 #include "flip_face.h"
@@ -236,6 +237,55 @@ hittable_list cornell_box() {
   return world;
 }
 
+hittable_list cornell_box_with_fog() {
+  hittable_list world;
+
+  // back
+  world.add(new xy_rect(0, 555, 0, 555, 555,
+                        new lambertian(new solid_color(color(.73, .73, .73)))));
+
+  // bottom
+  world.add(new xz_rect(0, 555, 0, 0, 555,
+                        new lambertian(new solid_color(color(.73, .73, .73)))));
+
+  // top
+  world.add(new flip_face(
+      new xz_rect(0, 555, 555, 0, 555,
+                  new lambertian(new solid_color(color(.73, .73, .73))))));
+
+  // left
+  world.add(new flip_face(
+      new yz_rect(0, 0, 555, 0, 555,
+                  new lambertian(new solid_color(color(.12, .45, .15))))));
+
+  // right
+  world.add(new yz_rect(555, 0, 555, 0, 555,
+                        new lambertian(new solid_color(color(.65, .05, .05)))));
+
+  // light
+  world.add(new xz_rect(213, 343, 554, 227, 332,
+                        new diffuse_light(new solid_color(color(15, 15, 15)))));
+
+  std::vector<material *> m1;
+  m1.emplace_back(new lambertian(new solid_color(color(.73, .73, .73))));
+  m1.emplace_back(new lambertian(new solid_color(color(.73, .73, .73))));
+  m1.emplace_back(new lambertian(new solid_color(color(.73, .73, .73))));
+  m1.emplace_back(new lambertian(new solid_color(color(.73, .73, .73))));
+  m1.emplace_back(new lambertian(new solid_color(color(.73, .73, .73))));
+  m1.emplace_back(new lambertian(new solid_color(color(.73, .73, .73))));
+  hittable *box1 = new box(point3(0, 0, 0), point3(165, 330, 165), m1);
+  box1 = new rotate_y(box1, 15);
+  box1 = new translate(box1, vec3(265, 0, 295));
+
+  world.add(box1);
+
+  world.add(new constant_medium(
+      new sphere(point3(200, 200, 200), 100,
+                 new lambertian(new solid_color(0.8, 0.8, 0.8))),
+      new solid_color(1, 1, 1), 0.01));
+  return world;
+}
+
 void simple_rtx(const camera &cam, int samples_per_pixel, int max_depth,
                 const hittable_list &world) {
   // PPM header
@@ -414,7 +464,8 @@ int main() {
   // hittable_list world = random_scene();
   // hittable_list world = the_earth();
   // hittable_list world = two_perlin_spheres();
-  hittable_list world = cornell_box();
+  // hittable_list world = cornell_box();
+  hittable_list world = cornell_box_with_fog();
   // hittable_list world = old_scene();
   std::cerr << "Building optimized world... ";
   world.optimize_bvh();
