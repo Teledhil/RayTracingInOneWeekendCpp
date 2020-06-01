@@ -13,7 +13,7 @@ public:
   color value(float u __attribute__((unused)), float v __attribute__((unused)),
               const point3 &p) const override {
     return color(1, 1, 1) * 0.5 *
-           (1.0 + sin(scale_ * p.z() + 10 * noise_.turbulence(scale_ * p)));
+           (1.0 + sin(scale_ * p.y() + 10 * noise_.turbulence(scale_ * p)));
   }
 
 private:

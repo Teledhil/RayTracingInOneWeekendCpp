@@ -11,7 +11,16 @@ class yz_rect : public hittable {
 
 public:
   yz_rect(float x, float y0, float y1, float z0, float z1, material *m)
-      : x_(x), y0_(y0), y1_(y1), z0_(z0), z1_(z1), m_(m) {}
+      : x_(x), y0_(y0), y1_(y1), z0_(z0), z1_(z1), m_(m) {
+    if (y1 < y0) {
+      std::swap(y0, y1);
+      // std::cerr << "Bad y0=" << y0 << ", y1=" << y1 << std::endl;
+    }
+    if (z1 < z0) {
+      std::swap(z0, z1);
+      // std::cerr << "Bad z0=" << z0 << ", z1=" << z1 << std::endl;
+    }
+  }
   ~yz_rect() { delete m_; }
 
   bool hit(const ray &r, float t_min, float t_max,

@@ -286,6 +286,92 @@ hittable_list cornell_box_with_fog() {
   return world;
 }
 
+hittable_list final_scene() {
+
+  // Ground boxes
+  //
+  hittable_list boxes1;
+  constexpr int BOXES_PER_SIDE = 20;
+  for (int i = 0; i < BOXES_PER_SIDE; ++i) {
+    for (int j = 0; j < BOXES_PER_SIDE; ++j) {
+      float w = 100.0;
+
+      float x0 = -1000.0 + i * w;
+      float z0 = -1000.0 + j * w;
+      float y0 = 0.0;
+
+      float x1 = x0 + w;
+      float y1 = random_float(1, 101);
+      float z1 = z0 + w;
+
+      std::vector<material *> ground;
+      ground.emplace_back(new lambertian(new solid_color(0.48, 0.83, 0.53)));
+      ground.emplace_back(new lambertian(new solid_color(0.48, 0.83, 0.53)));
+      ground.emplace_back(new lambertian(new solid_color(0.48, 0.83, 0.53)));
+      ground.emplace_back(new lambertian(new solid_color(0.48, 0.83, 0.53)));
+      ground.emplace_back(new lambertian(new solid_color(0.48, 0.83, 0.53)));
+      ground.emplace_back(new lambertian(new solid_color(0.48, 0.83, 0.53)));
+      boxes1.add(new box(point3(x0, y0, z0), point3(x1, y1, z1), ground));
+    }
+  }
+  boxes1.optimize_bvh();
+
+  hittable_list world;
+  world.add(boxes1);
+
+  // light
+  //
+  material *light = new diffuse_light(new solid_color(7, 7, 7));
+  world.add(new xz_rect(123, 423, 554, 147, 412, light));
+
+  // glass ball
+  //
+  world.add(new sphere(point3(260, 150, 45), 50, new dielectric(1.5)));
+
+  // diffuse metal ball
+  //
+  world.add(new sphere(point3(0, 150, 145), 50,
+                       new metal(color(0.8, 0.8, 0.9), 10.0)));
+
+  // blue caustic ball
+  world.add(new sphere(point3(360, 150, 145), 70, new dielectric(1.5)));
+  world.add(new constant_medium(
+      new sphere(point3(360, 150, 145), 70, new dielectric(1.5)),
+      new solid_color(0.2, 0.4, 0.9), 0.2));
+
+  // mist
+  world.add(new constant_medium(
+      new sphere(point3(0, 0, 0), 5000, new dielectric(1.5)),
+      new solid_color(1, 1, 1), 0.0001));
+
+  // the earth
+  material *earth_map = new lambertian(new image_texture("earthmap.jpg"));
+  world.add(new sphere(point3(400, 200, 400), 100, earth_map));
+
+  // pseudo jupiter
+  world.add(new sphere(point3(220, 280, 300), 80,
+                       new lambertian(new noise_texture(0.12))));
+
+  // cluster box
+  //
+  hittable_list cluster_box;
+  constexpr int LITTLE_BALLS = 1000;
+  for (int i = 0; i < LITTLE_BALLS; ++i) {
+    cluster_box.add(
+        new sphere(random_vec3(0, 165), 10,
+                   new lambertian(new solid_color(0.73, 0.73, 0.73))));
+  }
+  cluster_box.optimize_bvh();
+  hittable *optimized_cluster_box = cluster_box.eject_bvh();
+
+  optimized_cluster_box = new rotate_y(optimized_cluster_box, 15);
+  optimized_cluster_box =
+      new translate(optimized_cluster_box, vec3(-100, 270, 395));
+  world.add(optimized_cluster_box);
+
+  return world;
+}
+
 void simple_rtx(const camera &cam, int samples_per_pixel, int max_depth,
                 const hittable_list &world) {
   // PPM header
@@ -425,31 +511,30 @@ void parallelize_by_lines(const camera &cam, int samples_per_pixel,
   std::cerr << "Done" << std::endl;
 }
 
-int main() {
-  static constexpr int SAMPLES_PER_PIXEL = 1000;
-  static constexpr int MAX_DEPTH = 16;
+camera random_scene_camera() {
+  point3 lookfrom = vec3(13, 2, 3);
+  point3 lookat = vec3(0, 0, 0);
+  vec3 vup = vec3(0, 1, 0);
+  float vfov = 20;
+  float aperture = 0.01;
+  // float distance_to_focus = (lookfrom - lookat).length();
+  float distance_to_focus = 10.0;
+  camera cam(lookfrom, lookat, vup, vfov, aperture, distance_to_focus);
+  return cam;
+}
 
-  // camera for random scene
-  //
-  // point3 lookfrom = vec3(13, 2, 3);
-  // point3 lookat = vec3(0, 0, 0);
-  // vec3 vup = vec3(0, 1, 0);
-  // float vfov = 20;
-  // float aperture = 0.01;
-  //// float distance_to_focus = (lookfrom - lookat).length();
-  // float distance_to_focus = 10.0;
+camera two_perlin_spheres_camera() {
+  point3 lookfrom(13, 2, 3);
+  point3 lookat(0, 0, 0);
+  vec3 vup(0, 1, 0);
+  float vfov = 20;
+  float distance_to_focus = 10.0;
+  float aperture = 0.1;
+  camera cam(lookfrom, lookat, vup, vfov, aperture, distance_to_focus);
+  return cam;
+}
 
-  // camera for two perlin spheres
-  //
-  // point3 lookfrom(13, 2, 3);
-  // point3 lookat(0, 0, 0);
-  // vec3 vup(0, 1, 0);
-  // float vfov = 20;
-  // float distance_to_focus = 10.0;
-  // float aperture = 0.1;
-
-  // camera for cornell_box
-  //
+camera cornell_box_camera() {
   point3 lookfrom(278, 278, -800);
   point3 lookat(278, 278, 0);
   vec3 vup(0, 1, 0);
@@ -459,14 +544,41 @@ int main() {
 
   camera cam(lookfrom, lookat, vup, vfov, aperture, distance_to_focus);
 
+  return cam;
+}
+
+camera final_scene_camera() {
+  point3 lookfrom(478, 278, -600);
+  point3 lookat(278, 278, 0);
+  vec3 vup(0, 1, 0);
+  float vfov = 40.0;
+  float distance_to_focus = 10.0;
+  float aperture = 0.0;
+
+  camera cam(lookfrom, lookat, vup, vfov, aperture, distance_to_focus);
+
+  return cam;
+}
+
+int main() {
+  static constexpr int SAMPLES_PER_PIXEL = 20000;
+  static constexpr int MAX_DEPTH = 16;
+
+  // camera cam = random_scene_camera();
+  // camera cam = two_perlin_spheres_camera();
+  // camera cam(lookfrom, lookat, vup, vfov, aperture, distance_to_focus);
+  // camera cam = cornell_box_camera();
+  camera cam = final_scene_camera();
+
   // World objects
   //
   // hittable_list world = random_scene();
   // hittable_list world = the_earth();
   // hittable_list world = two_perlin_spheres();
   // hittable_list world = cornell_box();
-  hittable_list world = cornell_box_with_fog();
+  // hittable_list world = cornell_box_with_fog();
   // hittable_list world = old_scene();
+  hittable_list world = final_scene();
   std::cerr << "Building optimized world... ";
   world.optimize_bvh();
   std::cerr << "Done" << std::endl;

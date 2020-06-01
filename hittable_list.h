@@ -16,8 +16,13 @@ public:
     }
   }
 
-  void add(hittable *h) {
-    objects_.emplace_back(h);
+  void add(hittable *h) { objects_.emplace_back(h); }
+
+  void add(hittable_list &other) {
+    for (auto &o : other.objects_) {
+      objects_.emplace_back(o);
+    }
+    other.objects_.clear();
   }
 
   bool hit(const ray &r, float t_min, float t_max, hit_record &rec) const {
@@ -59,6 +64,12 @@ public:
     bvh_node *bvh = new bvh_node(objects_, 0, objects_.size(), 0.0, 1.0);
     objects_.clear();
     objects_.emplace_back(bvh);
+  }
+
+  hittable *eject_bvh() {
+    hittable *b = objects_[0];
+    objects_.clear();
+    return b;
   }
 
 public:

@@ -13,10 +13,12 @@ public:
   xy_rect(float x0, float x1, float y0, float y1, float z, material *m)
       : x0_(x0), x1_(x1), y0_(y0), y1_(y1), z_(z), m_(m) {
     if (x1 < x0) {
-      std::cerr << "Bad x0=" << x0 << ", x1=" << x1 << std::endl;
+      std::swap(x0, x1);
+      // std::cerr << "Bad x0=" << x0 << ", x1=" << x1 << std::endl;
     }
     if (y1 < y0) {
-      std::cerr << "Bad y0=" << y0 << ", y1=" << y1 << std::endl;
+      std::swap(y0, y1);
+      // std::cerr << "Bad y0=" << y0 << ", y1=" << y1 << std::endl;
     }
   }
   ~xy_rect() { delete m_; }

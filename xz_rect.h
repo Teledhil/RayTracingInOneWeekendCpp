@@ -13,10 +13,12 @@ public:
       : x0_(x0), x1_(x1), y_(y), z0_(z0), z1_(z1), m_(m) {
 
     if (x1 < x0) {
-      std::cerr << "Bad x0=" << x0 << ", x1=" << x1 << std::endl;
+      std::swap(x0, x1);
+      // std::cerr << "Bad x0=" << x0 << ", x1=" << x1 << std::endl;
     }
     if (z1 < z0) {
-      std::cerr << "Bad z0=" << z0 << ", z1=" << z1 << std::endl;
+      std::swap(z0, z1);
+      // std::cerr << "Bad z0=" << z0 << ", z1=" << z1 << std::endl;
     }
   }
   ~xz_rect() { delete m_; }
