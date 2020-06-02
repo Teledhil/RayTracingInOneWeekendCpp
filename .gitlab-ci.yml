@@ -1,0 +1,46 @@
+image: docker:git
+
+variables:
+  ## Local docker registry url
+  #
+  REGISTRY_PATH: localhost:5000
+  CONTAINER_IMAGE: ${REGISTRY_PATH}/${CI_PROJECT_PATH}
+  DOCKER_DRIVER: overlay2
+
+  ## benchmap docker things
+  DOCKER_CACHE_IMAGE: ${REGISTRY_PATH}/my_litte_raytracer:${CI_COMMIT_REF_SLUG}
+  DOCKER_COMMIT_IMAGE: ${REGISTRY_PATH}/my_litte_raytracer:${CI_BUILD_REF}
+
+stages:
+  - build
+
+before_script:
+  - echo $CI_BUILD_REF
+  - echo $CI_BUILD_REF_NAME
+  - echo $CI_COMMIT_REF_NAME
+  - echo $CI_COMMIT_REF_SLUG
+  - docker info
+  - docker login -u ${REGISTRY_USER} -p ${REGISTRY_PASS} ${REGISTRY_PATH}
+
+build:
+  stage: build
+  script:
+    ## Pull previous image used to build rtx to use it as a cache of
+    #  docker layers.
+    #  '|| true ' ensures job doesn't fail if there is no previous image
+    #  uploaded.
+    - docker pull ${DOCKER_CACHE_IMAGE} || true
+    ## Build rtx docker image using the latest code.
+    - >
+      docker build
+      --cache-from ${DOCKER_CACHE_IMAGE}
+      --tag ${DOCKER_CACHE_IMAGE}
+      --tag ${DOCKER_COMMIT_IMAGE}
+      --build-arg APT_PROXY=teledhil.eu
+      --build-arg env=dev
+      .
+    ## Push the new image as the next cache image.
+    - docker push ${DOCKER_CACHE_IMAGE} || true
+    ## Push the new image tagged with the commit ref to use in later stages.
+    - docker push ${DOCKER_COMMIT_IMAGE} || true
+
