@@ -319,6 +319,19 @@ hittable_list final_scene() {
   hittable_list world;
   world.add(boxes1);
 
+  // water
+  //
+  // std::vector<material *> water_texture;
+  // float water_index = 1.333;
+  // water_texture.emplace_back(new dielectric(water_index));
+  // water_texture.emplace_back(new dielectric(water_index));
+  // water_texture.emplace_back(new dielectric(water_index));
+  // water_texture.emplace_back(new dielectric(water_index));
+  // water_texture.emplace_back(new dielectric(water_index));
+  // water_texture.emplace_back(new dielectric(water_index));
+  // world.add(new box(point3(-1000.0, 0.0, -1000.0),
+  //                  point3(1000.0, 100.0, 1000.0), water_texture));
+
   // light
   //
   material *light = new diffuse_light(new solid_color(7, 7, 7));
@@ -561,8 +574,8 @@ camera final_scene_camera() {
 }
 
 int main() {
-  static constexpr int SAMPLES_PER_PIXEL = 20000;
-  static constexpr int MAX_DEPTH = 16;
+  static constexpr int SAMPLES_PER_PIXEL = 1000;
+  static constexpr int MAX_DEPTH = 8;
 
   // camera cam = random_scene_camera();
   // camera cam = two_perlin_spheres_camera();

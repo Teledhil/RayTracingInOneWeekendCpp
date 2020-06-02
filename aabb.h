@@ -14,24 +14,14 @@ public:
 
   bool hit(const ray &r, float t_min, float t_max) const {
 
-    for (int a = 0; a < 3; ++a) {
-      float inverse_direction = 1.0f / r.direction()[a];
+    vec3 inverse_direction = inv(r.direction());
+    vec3 t0 = (min_ - r.origin()) * inverse_direction;
+    vec3 t1 = (max_ - r.origin()) * inverse_direction;
 
-      float t0 = (min_[a] - r.origin()[a]) * inverse_direction;
-      float t1 = (max_[a] - r.origin()[a]) * inverse_direction;
+    t_min = std::max(t_min, ::max(::min(t0, t1)));
+    t_max = std::min(t_max, ::min(::max(t0, t1)));
 
-      if (inverse_direction < 0.0f) {
-        std::swap(t0, t1);
-      }
-
-      t_min = t0 > t_min ? t0 : t_min;
-      t_max = t1 < t_max ? t1 : t_max;
-
-      if (t_max <= t_min) {
-        return false;
-      }
-    }
-    return true;
+    return t_max > t_min;
   }
 
 private:
@@ -39,14 +29,10 @@ private:
   point3 max_;
 };
 
-aabb surrounding_box(aabb box0, aabb box1) {
-  point3 small(fmin(box0.min().x(), box1.min().x()),
-               fmin(box0.min().y(), box1.min().y()),
-               fmin(box0.min().z(), box1.min().z()));
+aabb surrounding_box(const aabb &box0, const aabb &box1) {
 
-  point3 big(fmax(box0.max().x(), box1.max().x()),
-             fmax(box0.max().y(), box1.max().y()),
-             fmax(box0.max().z(), box1.max().z()));
+  point3 small = ::min(box0.min(), box1.min());
+  point3 big = ::max(box0.max(), box1.max());
 
   return aabb(small, big);
 }

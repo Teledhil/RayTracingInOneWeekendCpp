@@ -69,6 +69,9 @@ class vec3 {
       return true;
     }
 
+    float min() const { return std::min(v[0], std::min(v[1], v[2])); }
+    float max() const { return std::max(v[0], std::max(v[1], v[2])); }
+
   private:
     float v[3];
 };
@@ -101,6 +104,10 @@ vec3 operator*(const vec3 &v, float t) {
 vec3 operator*(float t, const vec3 &v) { return v * t; }
 
 vec3 operator/(vec3 v, float t) { return (1 / t) * v; }
+vec3 operator/(float t, vec3 v) {
+  return vec3(t / v.x(), t / v.y(), t / v.z());
+}
+vec3 inv(vec3 v) { return vec3(1.0 / v.x(), 1.0 / v.y(), 1.0 / v.z()); }
 
 float dot(const vec3 &u, const vec3 &v) {
   return u.x() * v.x() + u.y() * v.y() + u.z() * v.z();
@@ -109,6 +116,18 @@ float dot(const vec3 &u, const vec3 &v) {
 vec3 cross(const vec3 &u, const vec3 &v) {
   return vec3(u.y() * v.z() - u.z() * v.y(), u.z() * v.x() - u.x() * v.z(),
               u.x() * v.y() - u.y() * v.x());
+}
+
+float min(const vec3 &v) { return v.min(); }
+float max(const vec3 &v) { return v.max(); }
+
+vec3 min(const vec3 &u, const vec3 &v) {
+  return vec3(std::min(u.x(), v.x()), std::min(u.y(), v.y()),
+              std::min(u.z(), v.z()));
+}
+vec3 max(const vec3 &u, const vec3 &v) {
+  return vec3(std::max(u.x(), v.x()), std::max(u.y(), v.y()),
+              std::max(u.z(), v.z()));
 }
 
 vec3 unit_vector(vec3 v) {
