@@ -7,6 +7,7 @@
 #include "bvh.h"
 #include "hittable.h"
 
+namespace rtx {
 class hittable_list {
 public:
   hittable_list() : objects_() {}
@@ -76,4 +77,5 @@ public:
   std::vector<hittable *> objects_;
 };
 
+} // namespace rtx
 #endif // HITTABLE_LIST_H_

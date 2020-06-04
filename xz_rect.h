@@ -7,6 +7,7 @@
 #include "ray.h"
 #include "vec3.h"
 
+namespace rtx {
 class xz_rect : public hittable {
 public:
   xz_rect(float x0, float x1, float y, float z0, float z1, material *m)
@@ -71,4 +72,5 @@ private:
   material *m_;
 };
 
+} // namespace rtx
 #endif // RZ_RECT_H_

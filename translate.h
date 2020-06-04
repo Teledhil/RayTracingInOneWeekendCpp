@@ -6,6 +6,7 @@
 #include "ray.h"
 #include "vec3.h"
 
+namespace rtx {
 class translate : public hittable {
 public:
   translate(hittable *h, const vec3 &displacement)
@@ -41,4 +42,5 @@ private:
   vec3 displacement_;
 };
 
+} // namespace rtx
 #endif // TRANSLATE_H_

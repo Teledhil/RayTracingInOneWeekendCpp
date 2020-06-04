@@ -5,6 +5,7 @@
 #include "hittable.h"
 #include "ray.h"
 
+namespace rtx {
 class flip_face : public hittable {
 public:
   flip_face(hittable * h) : h_(h) {}
@@ -27,4 +28,5 @@ public:
   private:
     hittable *h_;
   };
+  }    // namespace rtx
 #endif // FLIP_FACE_H_

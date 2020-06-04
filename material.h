@@ -6,6 +6,7 @@
 #include "ray.h"
 #include "vec3.h"
 
+namespace rtx {
 class material {
 public:
   virtual ~material() {}
@@ -17,4 +18,5 @@ public:
     return black;
   }
 };
+} // namespace rtx
 #endif // MATERIAL_H_

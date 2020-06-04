@@ -8,6 +8,7 @@
 #include "ray.h"
 #include "texture.h"
 
+namespace rtx {
 class constant_medium : public hittable {
 public:
   constant_medium(hittable *h, texture *t, float density)
@@ -73,4 +74,5 @@ private:
   material *t_;
   float neg_inv_density_;
 };
+} // namespace rtx
 #endif // CONSTANT_MEDIUM_H_

@@ -9,6 +9,7 @@
 #include "ray.h"
 #include "vec3.h"
 
+namespace rtx {
 class sphere : public hittable {
 public:
   sphere(point3 c, float r, material *m)
@@ -88,4 +89,5 @@ private:
   }
 };
 
+} // namespace rtx
 #endif // SPHERE_H_

@@ -9,6 +9,7 @@
 #include "utility.h"
 #include "vec3.h"
 
+namespace rtx {
 class rotate_y : public hittable {
 public:
   rotate_y(hittable *h, float angle) : h_(h) {
@@ -93,5 +94,5 @@ private:
   bool has_box_;
   aabb bbox_;
 };
-
+} // namespace rtx
 #endif // ROTATE_Y_H_

@@ -7,6 +7,7 @@
 #include "ray.h"
 #include "vec3.h"
 
+namespace rtx {
 class yz_rect : public hittable {
 
 public:
@@ -71,4 +72,5 @@ private:
   material *m_;
 };
 
+} // namespace rtx
 #endif // YZ_RECT_H_

@@ -3,6 +3,7 @@
 
 #include "vec3.h"
 
+namespace rtx {
 class ray {
 public:
   ray() = default;
@@ -25,4 +26,5 @@ private:
   vec3 direction_;
 };
 
+} // namespace rtx
 #endif // RAY_H_

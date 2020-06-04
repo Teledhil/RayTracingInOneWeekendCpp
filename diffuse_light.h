@@ -7,6 +7,7 @@
 #include "texture.h"
 #include "vec3.h"
 
+namespace rtx {
 class diffuse_light : public material {
 public:
   diffuse_light(texture *e) : emit_(e) {}
@@ -26,4 +27,5 @@ public:
 private:
   texture *emit_;
 };
+} // namespace rtx
 #endif // DIFFUSE_LIGHT_H_

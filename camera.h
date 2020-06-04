@@ -7,6 +7,7 @@
 #include "utility.h"
 #include "vec3.h"
 
+namespace rtx {
 class camera {
 public:
   camera(point3 lookfrom, point3 lookat, vec3 vup, float vertical_fov,
@@ -53,4 +54,5 @@ private:
   vec3 u_, v_, w_;
   float lens_radius_;
 };
+} // namespace rtx
 #endif // CAMERA_H_

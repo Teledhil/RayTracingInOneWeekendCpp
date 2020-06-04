@@ -8,6 +8,7 @@
 #include "texture.h"
 #include "vec3.h"
 
+namespace rtx {
 class lambertian : public material {
 public:
   lambertian(const texture *a) : albedo_(a) {}
@@ -33,4 +34,5 @@ public:
 private:
   const texture *albedo_;
 };
+} // namespace rtx
 #endif // LAMBERTIAN_H_

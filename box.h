@@ -13,6 +13,7 @@
 #include "xz_rect.h"
 #include "yz_rect.h"
 
+namespace rtx {
 class box : public hittable {
 public:
   box(const point3 &p0, const point3 &p1, const std::vector<material *> &m)
@@ -49,5 +50,6 @@ private:
   hittable_list sides_;
   std::vector<material *> m_;
 };
+} // namespace rtx
 
 #endif // BOX_H_

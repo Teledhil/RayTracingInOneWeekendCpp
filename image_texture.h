@@ -8,6 +8,7 @@
 #include "utility.h"
 #include "vec3.h"
 
+namespace rtx {
 class image_texture : public texture {
 public:
   image_texture(const char *filename) {
@@ -58,4 +59,5 @@ private:
   int bytes_per_scanline_;
 };
 
+} // namespace rtx
 #endif // IMAGE_TEXTURE_H_

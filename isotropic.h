@@ -7,6 +7,7 @@
 #include "texture.h"
 #include "vec3.h"
 
+namespace rtx {
 class isotropic : public material {
 public:
   isotropic(texture *t) : albedo_(t) {}
@@ -25,4 +26,5 @@ public:
 private:
   const texture *albedo_;
 };
+} // namespace rtx
 #endif // IOSTROPIC_H_

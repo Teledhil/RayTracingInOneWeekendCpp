@@ -5,6 +5,7 @@
 
 #include "vec3.h"
 
+namespace rtx {
 class solid_color : public texture {
 public:
   solid_color(const color &c) : color_value_(c) {}
@@ -21,4 +22,5 @@ private:
   const color color_value_;
 };
 
+} // namespace rtx
 #endif // SOLID_COLOR_H_

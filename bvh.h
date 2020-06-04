@@ -9,6 +9,7 @@
 #include "hittable.h"
 #include "ray.h"
 
+namespace rtx {
 bool box_compare(const hittable *a, const hittable *b, int axis) {
   aabb box_a;
   aabb box_b;
@@ -119,4 +120,5 @@ public:
   aabb box;
 };
 
+} // namespace rtx
 #endif // BVH_H_

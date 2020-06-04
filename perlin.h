@@ -6,6 +6,7 @@
 #include "utility.h"
 #include "vec3.h"
 
+namespace rtx {
 class perlin {
 public:
   perlin() {
@@ -127,4 +128,5 @@ private:
   }
 };
 
+} // namespace rtx
 #endif // PERLIN_H_

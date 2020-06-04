@@ -7,6 +7,7 @@
 #include "texture.h"
 #include "vec3.h"
 
+namespace rtx {
 class noise_texture : public texture {
 public:
   noise_texture(float sc) : scale_(sc) {}
@@ -20,4 +21,5 @@ private:
   perlin noise_;
   float scale_;
 };
+} // namespace rtx
 #endif // NOISE_TEXTURE_H_

@@ -7,6 +7,7 @@
 #include "ray.h"
 #include "vec3.h"
 
+namespace rtx {
 class metal : public material {
 public:
   metal(const color &a, float f) : albedo_(a), fuzziness_(f > 1 ? 1 : f) {}
@@ -28,4 +29,5 @@ private:
   color albedo_;
   float fuzziness_;
 };
+} // namespace rtx
 #endif // METAL_H_

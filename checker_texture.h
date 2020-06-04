@@ -5,6 +5,7 @@
 
 #include "texture.h"
 
+namespace rtx {
 class checker_texture : public texture {
 public:
   checker_texture(const texture *t0, const texture *t1) : even(t0), odd(t1) {}
@@ -27,4 +28,5 @@ private:
   const texture *even;
   const texture *odd;
 };
+} // namespace rtx
 #endif // CHECKER_TEXTURE_H_

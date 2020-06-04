@@ -27,6 +27,8 @@
 #include "xz_rect.h"
 #include "yz_rect.h"
 
+using namespace rtx;
+
 color ray_color(const ray &r, const hittable_list &world, int depth) {
   // Limit how much the ray can bounce around.
   if (depth <= 0) {
@@ -85,8 +87,8 @@ hittable_list random_scene() {
   hittable_list world;
 
   // The Ground
-  texture *ground_texture = new checker_texture(new solid_color(0.2, 0.3, 0.1),
-                                                new solid_color(0.9, 0.9, 0.9));
+  rtx::texture *ground_texture = new checker_texture(
+      new solid_color(0.2, 0.3, 0.1), new solid_color(0.9, 0.9, 0.9));
   material *ground_material = new lambertian(ground_texture);
   world.add(new sphere(point3(0, -1000.0, 0), 1000, ground_material));
 

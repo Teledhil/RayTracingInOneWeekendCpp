@@ -7,6 +7,7 @@
 
 #include "utility.h"
 
+namespace rtx {
 class vec3 {
   public:
     vec3() : v{0, 0, 0} {}
@@ -194,4 +195,5 @@ vec3 refract(const vec3 &r_in, const vec3 &n, float etai_over_etat) {
   return r_out_parallel + r_out_perpendicular;
 }
 
+} // namespace rtx
 # endif // VEC3_H_

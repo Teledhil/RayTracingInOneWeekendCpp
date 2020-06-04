@@ -9,6 +9,7 @@
 #include "utility.h"
 #include "vec3.h"
 
+namespace rtx {
 class dielectric : public material {
 public:
   dielectric(float ri) : refraction_index_(ri) {}
@@ -67,4 +68,5 @@ private:
   }
 };
 
+} // namespace rtx
 #endif // DIELECTRIC_H_

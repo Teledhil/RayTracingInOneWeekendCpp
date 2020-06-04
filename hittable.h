@@ -4,6 +4,7 @@
 #include "ray.h"
 #include "vec3.h"
 
+namespace rtx {
 class material;
 
 struct hit_record {
@@ -35,4 +36,5 @@ public:
                    hit_record &rec) const = 0;
   virtual bool bounding_box(float t0, float t1, aabb &output_box) const = 0;
 };
+} // namespace rtx
 #endif // HITTABLE_H_
