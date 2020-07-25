@@ -1,9 +1,12 @@
 #ifndef XY_RECT_H_
 #define XY_RECT_H_
 
+#include <utility>
+
 #include "aabb.h"
 #include "hittable.h"
 #include "material.h"
+#include "random.h"
 #include "ray.h"
 #include "vec3.h"
 
@@ -24,8 +27,8 @@ public:
   }
   ~xy_rect() { delete m_; }
 
-  bool hit(const ray &r, float t_min, float t_max,
-           hit_record &rec) const override {
+  bool hit(const ray &r, float t_min, float t_max, hit_record &rec,
+           rtx::random &ran __attribute__((unused))) const override {
 
     if (0 == r.direction().z()) {
       return false;

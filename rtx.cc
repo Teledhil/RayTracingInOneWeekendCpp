@@ -16,6 +16,7 @@
 #include "lambertian.h"
 #include "metal.h"
 #include "noise_texture.h"
+#include "random.h"
 #include "ray.h"
 #include "rotate_y.h"
 #include "solid_color.h"
@@ -29,14 +30,15 @@
 
 using namespace rtx;
 
-color ray_color(const ray &r, const hittable_list &world, int depth) {
+color ray_color(const ray &r, const hittable_list &world, int depth,
+                rtx::random &ran) {
   // Limit how much the ray can bounce around.
   if (depth <= 0) {
     return black;
   }
 
   hit_record rec;
-  if (!world.hit(r, 0.001, infinity, rec)) {
+  if (!world.hit(r, 0.001, infinity, rec, ran)) {
     // or color background.
     return black;
   }
@@ -44,10 +46,10 @@ color ray_color(const ray &r, const hittable_list &world, int depth) {
   color emitted = rec.m->emitted(rec.u, rec.v, rec.p);
   ray scattered;
   color attenuation;
-  if (!rec.m->scatter(r, rec, attenuation, scattered)) {
+  if (!rec.m->scatter(r, rec, attenuation, scattered, ran)) {
     return emitted;
   }
-  return emitted + attenuation * ray_color(scattered, world, depth - 1);
+  return emitted + attenuation * ray_color(scattered, world, depth - 1, ran);
 
   //// Hits infinity
   // vec3 unit_direction = unit_vector(r.direction());
@@ -57,7 +59,7 @@ color ray_color(const ray &r, const hittable_list &world, int depth) {
   // return (1.0 - t) * white + t * blue;
 }
 
-hittable_list old_scene() {
+hittable_list old_scene(rtx::random &ran __attribute__((unused))) {
   // World objects
   hittable_list world;
   // center sphere
@@ -83,8 +85,9 @@ hittable_list old_scene() {
   return world;
 }
 
-hittable_list random_scene() {
+hittable_list random_scene(rtx::random &ran) {
   hittable_list world;
+
 
   // The Ground
   rtx::texture *ground_texture = new checker_texture(
@@ -95,10 +98,10 @@ hittable_list random_scene() {
   // Some random mini spheres
   for (int a = -11; a < 11; a++) {
     for (int b = -11; b < 11; b++) {
-      float choose_material = random_float();
+      float choose_material = ran.random_float();
       float mini_sphere_radius = 0.2;
-      point3 center(a + 0.9 * random_float(), mini_sphere_radius,
-                    b + 0.9 * random_float());
+      point3 center(a + 0.9 * ran.random_float(), mini_sphere_radius,
+                    b + 0.9 * ran.random_float());
 
       // if not too close to the center
       if ((center - vec3(4, 0.2, 0)).length() > 0.9) {
@@ -107,15 +110,15 @@ hittable_list random_scene() {
         point3 light_offset(0, 0, 0);
         if (choose_material < 0.7) {
           // diffuse
-          const color albedo = random_vec3() * random_vec3();
+          const color albedo = ran.random_vec3() * ran.random_vec3();
           sphere_material = new lambertian(new solid_color(albedo));
         } else if (choose_material < 0.8) {
           sphere_material = new diffuse_light(new solid_color(white));
           light_offset = point3(0, 2.5, 0);
         } else if (choose_material < 0.95) {
           // metal
-          color albedo = random_vec3(0.5, 1);
-          float fuzziness = random_float(0, 0.2);
+          color albedo = ran.random_vec3(0.5, 1);
+          float fuzziness = ran.random_float(0, 0.2);
           sphere_material = new metal(albedo, fuzziness);
         } else {
           // dielectric
@@ -139,15 +142,15 @@ hittable_list random_scene() {
   return world;
 }
 
-hittable_list two_perlin_spheres() {
+hittable_list two_perlin_spheres(rtx::random &ran) {
   hittable_list world;
 
   // texture *perlin_texture = new noise_texture();
 
   world.add(new sphere(point3(0, -1000, 0), 1000,
-                       new lambertian(new noise_texture(2.0))));
-  world.add(
-      new sphere(point3(0, 2, 0), 2, new lambertian(new noise_texture(10.0))));
+                       new lambertian(new noise_texture(2.0, ran))));
+  world.add(new sphere(point3(0, 2, 0), 2,
+                       new lambertian(new noise_texture(10.0, ran))));
 
   material *difflight_rectangle =
       new diffuse_light(new solid_color(color(4, 4, 4)));
@@ -174,7 +177,7 @@ hittable_list two_perlin_spheres() {
   return world;
 }
 
-hittable_list the_earth() {
+hittable_list the_earth(rtx::random &ran __attribute__((unused))) {
   hittable_list world;
   world.add(new sphere(point3(0, 2, 0), 2,
                        new lambertian(new image_texture("earthmap.jpg"))));
@@ -182,7 +185,7 @@ hittable_list the_earth() {
   return world;
 }
 
-hittable_list cornell_box() {
+hittable_list cornell_box(rtx::random &ran __attribute__((unused))) {
   hittable_list world;
 
   // back
@@ -239,7 +242,7 @@ hittable_list cornell_box() {
   return world;
 }
 
-hittable_list cornell_box_with_fog() {
+hittable_list cornell_box_with_fog(rtx::random &ran __attribute__((unused))) {
   hittable_list world;
 
   // back
@@ -288,7 +291,7 @@ hittable_list cornell_box_with_fog() {
   return world;
 }
 
-hittable_list final_scene() {
+hittable_list final_scene(rtx::random &ran) {
 
   // Ground boxes
   //
@@ -303,7 +306,7 @@ hittable_list final_scene() {
       float y0 = 0.0;
 
       float x1 = x0 + w;
-      float y1 = random_float(1, 101);
+      float y1 = ran.random_float(1, 101);
       float z1 = z0 + w;
 
       std::vector<material *> ground;
@@ -316,7 +319,7 @@ hittable_list final_scene() {
       boxes1.add(new box(point3(x0, y0, z0), point3(x1, y1, z1), ground));
     }
   }
-  boxes1.optimize_bvh();
+  boxes1.optimize_bvh(ran);
 
   hittable_list world;
   world.add(boxes1);
@@ -365,7 +368,7 @@ hittable_list final_scene() {
 
   // pseudo jupiter
   world.add(new sphere(point3(220, 280, 300), 80,
-                       new lambertian(new noise_texture(0.12))));
+                       new lambertian(new noise_texture(0.12, ran))));
 
   // cluster box
   //
@@ -373,10 +376,10 @@ hittable_list final_scene() {
   constexpr int LITTLE_BALLS = 1000;
   for (int i = 0; i < LITTLE_BALLS; ++i) {
     cluster_box.add(
-        new sphere(random_vec3(0, 165), 10,
+        new sphere(ran.random_vec3(0, 165), 10,
                    new lambertian(new solid_color(0.73, 0.73, 0.73))));
   }
-  cluster_box.optimize_bvh();
+  cluster_box.optimize_bvh(ran);
   hittable *optimized_cluster_box = cluster_box.eject_bvh();
 
   optimized_cluster_box = new rotate_y(optimized_cluster_box, 15);
@@ -389,6 +392,9 @@ hittable_list final_scene() {
 
 void simple_rtx(const camera &cam, int samples_per_pixel, int max_depth,
                 const hittable_list &world) {
+
+  rtx::random ran;
+
   // PPM header
   std::cout << "P3" << std::endl;
   std::cout << cam.getWidth() << " " << cam.getHeight() << std::endl;
@@ -399,11 +405,11 @@ void simple_rtx(const camera &cam, int samples_per_pixel, int max_depth,
     for (int i = 0; i < cam.getWidth(); ++i) {
       color pixel(0, 0, 0);
       for (int s = 0; s < samples_per_pixel; ++s) {
-        float u = (i + random_float()) / (cam.getWidth() - 1);
-        float v = (j + random_float()) / (cam.getHeight() - 1);
+        float u = (i + ran.random_float()) / (cam.getWidth() - 1);
+        float v = (j + ran.random_float()) / (cam.getHeight() - 1);
 
-        ray r = cam.get_ray(u, v);
-        pixel += ray_color(r, world, max_depth);
+        ray r = cam.get_ray(u, v, ran);
+        pixel += ray_color(r, world, max_depth, ran);
       }
       write_color(std::cout, pixel, samples_per_pixel);
     }
@@ -413,6 +419,7 @@ void simple_rtx(const camera &cam, int samples_per_pixel, int max_depth,
 void thread_work_by_sample(const camera &cam, int samples_per_pixel,
                            int max_depth, const hittable_list &world,
                            std::vector<std::vector<color>> &canvas) {
+  rtx::random ran;
   std::vector<std::vector<color>> local_canvas(
       cam.getHeight(), std::vector<color>(cam.getWidth()));
   for (int j = cam.getHeight() - 1; j >= 0; --j) {
@@ -420,11 +427,11 @@ void thread_work_by_sample(const camera &cam, int samples_per_pixel,
       color &pixel = local_canvas[j][i];
       pixel = black;
       for (int s = 0; s < samples_per_pixel; ++s) {
-        float u = (i + random_float()) / (cam.getWidth() - 1);
-        float v = (j + random_float()) / (cam.getHeight() - 1);
+        float u = (i + ran.random_float()) / (cam.getWidth() - 1);
+        float v = (j + ran.random_float()) / (cam.getHeight() - 1);
 
-        ray r = cam.get_ray(u, v);
-        pixel += ray_color(r, world, max_depth);
+        ray r = cam.get_ray(u, v, ran);
+        pixel += ray_color(r, world, max_depth, ran);
       }
     }
   }
@@ -478,15 +485,17 @@ void thread_work_by_line(const camera &cam, int samples_per_pixel,
                          std::vector<color> &canvas, unsigned num_threads,
                          int thread_id) {
 
+  rtx::random ran(thread_id);
+
   for (int j = cam.getHeight() - thread_id - 1; j >= 0; j -= num_threads) {
     for (int i = 0; i < cam.getWidth(); ++i) {
       color pixel = black;
       for (int s = 0; s < samples_per_pixel; ++s) {
-        float u = (i + random_float()) / (cam.getWidth() - 1);
-        float v = (j + random_float()) / (cam.getHeight() - 1);
+        float u = (i + ran.random_float()) / (cam.getWidth() - 1);
+        float v = (j + ran.random_float()) / (cam.getHeight() - 1);
 
-        ray r = cam.get_ray(u, v);
-        pixel += ray_color(r, world, max_depth);
+        ray r = cam.get_ray(u, v, ran);
+        pixel += ray_color(r, world, max_depth, ran);
       }
       canvas[j * cam.getWidth() + i] = pixel;
     }
@@ -585,17 +594,19 @@ int main() {
   // camera cam = cornell_box_camera();
   camera cam = final_scene_camera();
 
+  rtx::random scene_randomness;
+
   // World objects
   //
-  // hittable_list world = random_scene();
-  // hittable_list world = the_earth();
-  // hittable_list world = two_perlin_spheres();
-  // hittable_list world = cornell_box();
-  // hittable_list world = cornell_box_with_fog();
-  // hittable_list world = old_scene();
-  hittable_list world = final_scene();
+  // hittable_list world = random_scene(scene_randomness);
+  // hittable_list world = the_earth(scene_randomness);
+  // hittable_list world = two_perlin_spheres(scene_randomness);
+  // hittable_list world = cornell_box(scene_randomness);
+  // hittable_list world = cornell_box_with_fog(scene_randomness);
+  // hittable_list world = old_scene(scene_randomness);
+  hittable_list world = final_scene(scene_randomness);
   std::cerr << "Building optimized world... ";
-  world.optimize_bvh();
+  world.optimize_bvh(scene_randomness);
   std::cerr << "Done" << std::endl;
 
   // simple_rtx(cam, SAMPLES_PER_PIXEL, MAX_DEPTH, world);

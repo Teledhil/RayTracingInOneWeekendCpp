@@ -5,6 +5,7 @@
 
 #include "color.h"
 #include "hittable.h"
+#include "random.h"
 #include "ray.h"
 #include "utility.h"
 #include "vec3.h"
@@ -15,7 +16,7 @@ public:
   dielectric(float ri) : refraction_index_(ri) {}
 
   bool scatter(const ray &r_in, const hit_record &rec, color &attenuation,
-               ray &scattered) const override {
+               ray &scattered, rtx::random &ran) const override {
 
     float etai_over_etat;
     if (rec.front_face) {
@@ -29,7 +30,7 @@ public:
     float sin_theta = sqrt(1.0 - cos_theta * cos_theta);
 
     if ((etai_over_etat * sin_theta > 1.0) ||
-        (random_float() < schlick(cos_theta, etai_over_etat))) {
+        (ran.random_float() < schlick(cos_theta, etai_over_etat))) {
       // Reflection: Either the incidence angle is to great or the specular
       // reflection happens.
       vec3 reflected = reflect(unit_direction, rec.normal);

@@ -4,6 +4,7 @@
 #include "color.h"
 #include "hittable.h"
 #include "material.h"
+#include "random.h"
 #include "ray.h"
 #include "texture.h"
 #include "vec3.h"
@@ -15,10 +16,11 @@ public:
   ~lambertian() { delete albedo_; }
 
   bool scatter(const ray &r_in __attribute__((unused)), const hit_record &rec,
-               color &attenuation, ray &scattered) const override {
-    vec3 scatter_direction = rec.normal + random_unit_vector();
+               color &attenuation, ray &scattered,
+               rtx::random &ran) const override {
+    vec3 scatter_direction = rec.normal + ran.random_unit_vector();
     while (scatter_direction == vec3(0, 0, 0)) {
-      scatter_direction = rec.normal + random_unit_vector();
+      scatter_direction = rec.normal + ran.random_unit_vector();
     }
 
     // scattered = ray(rec.p, scatter_direction);

@@ -5,6 +5,7 @@
 
 #include "aabb.h"
 #include "hittable.h"
+#include "random.h"
 #include "ray.h"
 #include "utility.h"
 #include "vec3.h"
@@ -45,8 +46,8 @@ public:
   }
   ~rotate_y() { delete h_; }
 
-  bool hit(const ray &r, float t_min, float t_max,
-           hit_record &rec) const override {
+  bool hit(const ray &r, float t_min, float t_max, hit_record &rec,
+           rtx::random &ran) const override {
 
     point3 origin = r.origin();
     point3 direction = r.direction();
@@ -61,7 +62,7 @@ public:
 
     ray ray_rotated(origin, direction);
 
-    if (!h_->hit(ray_rotated, t_min, t_max, rec)) {
+    if (!h_->hit(ray_rotated, t_min, t_max, rec, ran)) {
       return false;
     }
 

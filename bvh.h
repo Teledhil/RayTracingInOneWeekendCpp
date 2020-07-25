@@ -7,6 +7,7 @@
 
 #include "aabb.h"
 #include "hittable.h"
+#include "random.h"
 #include "ray.h"
 
 namespace rtx {
@@ -35,11 +36,11 @@ bool box_z_compare(const hittable *a, const hittable *b) {
 class bvh_node : public hittable {
 public:
   bvh_node(std::vector<hittable *> &objects, size_t start, size_t end, float t0,
-           float t1) {
+           float t1, rtx::random &r) {
 
     // pick a random axis to split objets left and right
     // int axis = random_int(0, 2);
-    int axis = random_int(0, 2);
+    int axis = r.random_int(0, 2);
     auto comparator = (axis == 0) ? box_x_compare
                                   : (axis == 1) ? box_z_compare : box_y_compare;
 
@@ -62,8 +63,8 @@ public:
     } else {
       std::sort(objects.begin() + start, objects.begin() + end, comparator);
       size_t mid = start + object_span / 2;
-      left = new bvh_node(objects, start, mid, t0, t1);
-      right = new bvh_node(objects, mid, end, t0, t1);
+      left = new bvh_node(objects, start, mid, t0, t1, r);
+      right = new bvh_node(objects, mid, end, t0, t1, r);
     }
 
 
@@ -79,16 +80,16 @@ public:
     box = surrounding_box(left_box, right_box);
   }
 
-  bool hit(const ray &r, float t_min, float t_max,
-           hit_record &rec) const override {
+  bool hit(const ray &r, float t_min, float t_max, hit_record &rec,
+           rtx::random &ran) const override {
     if (!box.hit(r, t_min, t_max)) {
       return false;
     }
 
     hit_record left_rec;
-    bool hit_left = left->hit(r, t_min, t_max, left_rec);
+    bool hit_left = left->hit(r, t_min, t_max, left_rec, ran);
     hit_record right_rec;
-    bool hit_right = right->hit(r, t_min, t_max, right_rec);
+    bool hit_right = right->hit(r, t_min, t_max, right_rec, ran);
     if (hit_left && hit_right) {
       rec = left_rec.t < right_rec.t ? left_rec : right_rec;
     } else if (hit_left) {

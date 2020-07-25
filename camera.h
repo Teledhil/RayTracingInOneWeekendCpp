@@ -3,6 +3,7 @@
 
 #include <iostream>
 
+#include "random.h"
 #include "ray.h"
 #include "utility.h"
 #include "vec3.h"
@@ -31,8 +32,8 @@ public:
     lens_radius_ = aperture / 2;
   }
 
-  ray get_ray(float u, float v) const {
-    vec3 rd = lens_radius_ * random_in_unit_disk();
+  ray get_ray(float u, float v, rtx::random &r) const {
+    vec3 rd = lens_radius_ * r.random_in_unit_disk();
     vec3 offset = u_ * rd.x() + v_ * rd.y();
     return ray(origin_ + offset, lower_left_corner_ + u * horizontal_ +
                                      v * vertical_ - origin_ - offset);

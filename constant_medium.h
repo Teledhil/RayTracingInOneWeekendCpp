@@ -5,6 +5,7 @@
 #include "hittable.h"
 #include "isotropic.h"
 #include "material.h"
+#include "random.h"
 #include "ray.h"
 #include "texture.h"
 
@@ -18,17 +19,17 @@ public:
     delete t_;
   }
 
-  bool hit(const ray &r, float t_min, float t_max,
-           hit_record &rec) const override {
+  bool hit(const ray &r, float t_min, float t_max, hit_record &rec,
+           rtx::random &ran) const override {
 
     hit_record rec1;
     hit_record rec2;
 
-    if (!h_->hit(r, -infinity, infinity, rec1)) {
+    if (!h_->hit(r, -infinity, infinity, rec1, ran)) {
       return false;
     }
 
-    if (!h_->hit(r, rec1.t + 0.0001, infinity, rec2)) {
+    if (!h_->hit(r, rec1.t + 0.0001, infinity, rec2, ran)) {
       return false;
     }
 
@@ -50,7 +51,7 @@ public:
 
     const float ray_length = r.direction().length();
     const float distance_inside_hittable = (rec2.t - rec1.t) * ray_length;
-    const float hit_distance = neg_inv_density_ * log(random_float());
+    const float hit_distance = neg_inv_density_ * log(ran.random_float());
 
     if (hit_distance > distance_inside_hittable) {
       return false;

@@ -3,6 +3,7 @@
 
 #include "hittable.h"
 #include "material.h"
+#include "random.h"
 #include "ray.h"
 #include "texture.h"
 #include "vec3.h"
@@ -14,10 +15,11 @@ public:
   ~isotropic() { delete albedo_; }
 
   bool scatter(const ray &r_in __attribute__((unused)), const hit_record &rec,
-               color &attenuation, ray &scattered) const override {
+               color &attenuation, ray &scattered,
+               rtx::random &r) const override {
 
     scattered.origin(rec.p);
-    scattered.direction(random_in_unit_sphere());
+    scattered.direction(r.random_in_unit_sphere());
     attenuation = albedo_->value(rec.u, rec.v, rec.p);
 
     return true;

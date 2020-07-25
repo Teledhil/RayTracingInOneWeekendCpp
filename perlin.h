@@ -3,21 +3,22 @@
 
 #include <math.h>
 
+#include "random.h"
 #include "utility.h"
 #include "vec3.h"
 
 namespace rtx {
 class perlin {
 public:
-  perlin() {
+  perlin(rtx::random &r) {
     ranvec_ = new vec3[POINT_COUNT];
     for (int i = 0; i < POINT_COUNT; ++i) {
-      ranvec_[i] = unit_vector(random_vec3(-1, 1));
+      ranvec_[i] = unit_vector(r.random_vec3(-1, 1));
     }
 
-    perm_x_ = perlin_generate_perm();
-    perm_y_ = perlin_generate_perm();
-    perm_z_ = perlin_generate_perm();
+    perm_x_ = perlin_generate_perm(r);
+    perm_y_ = perlin_generate_perm(r);
+    perm_z_ = perlin_generate_perm(r);
   }
 
   ~perlin() {
@@ -70,21 +71,21 @@ private:
   int *perm_y_;
   int *perm_z_;
 
-  static int *perlin_generate_perm() {
+  static int *perlin_generate_perm(rtx::random &r) {
     int *p = new int[POINT_COUNT];
 
     for (int i = 0; i < POINT_COUNT; ++i) {
       p[i] = i;
     }
 
-    permute(p, POINT_COUNT);
+    permute(p, POINT_COUNT, r);
 
     return p;
   }
 
-  static void permute(int *p, int n) {
+  static void permute(int *p, int n, rtx::random &r) {
     for (int i = 0; i < n; ++i) {
-      int target = random_int(0, i);
+      int target = r.random_int(0, i);
       int tmp = p[i];
       p[i] = p[target];
       p[target] = tmp;

@@ -6,6 +6,7 @@
 #include "aabb.h"
 #include "bvh.h"
 #include "hittable.h"
+#include "random.h"
 
 namespace rtx {
 class hittable_list {
@@ -26,14 +27,15 @@ public:
     other.objects_.clear();
   }
 
-  bool hit(const ray &r, float t_min, float t_max, hit_record &rec) const {
+  bool hit(const ray &r, float t_min, float t_max, hit_record &rec,
+           rtx::random &ran) const {
 
     hit_record temp_rec;
     bool hit_anything = false;
     float closest_so_far = t_max;
 
     for (auto o : objects_) {
-      if (o->hit(r, t_min, t_max, temp_rec)) {
+      if (o->hit(r, t_min, t_max, temp_rec, ran)) {
         hit_anything = true;
         if (temp_rec.t < closest_so_far) {
           closest_so_far = temp_rec.t;
@@ -61,8 +63,8 @@ public:
     return true;
   }
 
-  void optimize_bvh() {
-    bvh_node *bvh = new bvh_node(objects_, 0, objects_.size(), 0.0, 1.0);
+  void optimize_bvh(rtx::random &r) {
+    bvh_node *bvh = new bvh_node(objects_, 0, objects_.size(), 0.0, 1.0, r);
     objects_.clear();
     objects_.emplace_back(bvh);
   }

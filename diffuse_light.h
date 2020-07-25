@@ -3,6 +3,7 @@
 
 #include "hittable.h"
 #include "material.h"
+#include "random.h"
 #include "ray.h"
 #include "texture.h"
 #include "vec3.h"
@@ -15,7 +16,8 @@ public:
   bool scatter(const ray &r_in __attribute__((unused)),
                const hit_record &rec __attribute__((unused)),
                color &attenuation __attribute__((unused)),
-               ray &scattered __attribute__((unused))) const override {
+               ray &scattered __attribute__((unused)),
+               rtx::random &ran __attribute__((unused))) const override {
     return false;
   }
 

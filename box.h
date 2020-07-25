@@ -8,6 +8,7 @@
 #include "hittable.h"
 #include "hittable_list.h"
 #include "material.h"
+#include "random.h"
 #include "vec3.h"
 #include "xy_rect.h"
 #include "xz_rect.h"
@@ -32,9 +33,9 @@ public:
         new yz_rect(p0.x(), p0.y(), p1.y(), p0.z(), p1.z(), m_[5])));
   }
 
-  bool hit(const ray &r, float t_min, float t_max,
-           hit_record &rec) const override {
-    return sides_.hit(r, t_min, t_max, rec);
+  bool hit(const ray &r, float t_min, float t_max, hit_record &rec,
+           rtx::random &ran) const override {
+    return sides_.hit(r, t_min, t_max, rec, ran);
   }
 
   bool bounding_box(float t0 __attribute__((unused)),

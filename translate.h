@@ -3,6 +3,7 @@
 
 #include "aabb.h"
 #include "hittable.h"
+#include "random.h"
 #include "ray.h"
 #include "vec3.h"
 
@@ -13,11 +14,11 @@ public:
       : h_(h), displacement_(displacement) {}
   ~translate() { delete h_; }
 
-  bool hit(const ray &r, float t_min, float t_max,
-           hit_record &rec) const override {
+  bool hit(const ray &r, float t_min, float t_max, hit_record &rec,
+           rtx::random &ran) const override {
     ray ray_moved(r.origin() - displacement_, r.direction());
 
-    if (!h_->hit(ray_moved, t_min, t_max, rec)) {
+    if (!h_->hit(ray_moved, t_min, t_max, rec, ran)) {
       return false;
     }
 

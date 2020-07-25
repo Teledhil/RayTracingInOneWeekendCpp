@@ -3,6 +3,7 @@
 
 #include "aabb.h"
 #include "hittable.h"
+#include "random.h"
 #include "ray.h"
 
 namespace rtx {
@@ -11,9 +12,9 @@ public:
   flip_face(hittable * h) : h_(h) {}
   ~flip_face() { delete h_; }
 
-  bool hit(const ray &r, float t_min, float t_max, hit_record &rec)
-      const override {
-    if (!h_->hit(r, t_min, t_max, rec)) {
+  bool hit(const ray &r, float t_min, float t_max, hit_record &rec,
+           rtx::random &ran) const override {
+    if (!h_->hit(r, t_min, t_max, rec, ran)) {
       return false;
     }
 

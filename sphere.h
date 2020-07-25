@@ -6,6 +6,7 @@
 #include "aabb.h"
 #include "hittable.h"
 #include "material.h"
+#include "random.h"
 #include "ray.h"
 #include "vec3.h"
 
@@ -18,8 +19,8 @@ public:
     delete material_;
   }
 
-  bool hit(const ray &r, float t_min, float t_max,
-           hit_record &rec) const override {
+  bool hit(const ray &r, float t_min, float t_max, hit_record &rec,
+           rtx::random &ran __attribute__((unused))) const override {
     // Solve the quadratic function.
 
     vec3 oc = r.origin() - center_;
