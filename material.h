@@ -1,5 +1,4 @@
-#ifndef MATERIAL_H_
-#define MATERIAL_H_
+#pragma once
 
 #include "color.h"
 #include "hittable.h"
@@ -21,4 +20,3 @@ public:
   }
 };
 } // namespace rtx
-#endif // MATERIAL_H_
