@@ -1,5 +1,4 @@
-#ifndef IOSTROPIC_H_
-#define IOSTROPIC_H_
+#pragma once
 
 #include "hittable.h"
 #include "material.h"
@@ -16,10 +15,10 @@ public:
 
   bool scatter(const ray &r_in __attribute__((unused)), const hit_record &rec,
                color &attenuation, ray &scattered,
-               rtx::random &r) const override {
+               rtx::random &ran) const override {
 
     scattered.origin(rec.p);
-    scattered.direction(r.random_in_unit_sphere());
+    scattered.direction(ran.random_in_unit_sphere());
     attenuation = albedo_->value(rec.u, rec.v, rec.p);
 
     return true;
@@ -29,4 +28,3 @@ private:
   const texture *albedo_;
 };
 } // namespace rtx
-#endif // IOSTROPIC_H_

@@ -1,5 +1,4 @@
-#ifndef BVH_H_
-#define BVH_H_
+#pragma once
 
 #include <algorithm>
 #include <iostream>
@@ -15,8 +14,9 @@ bool box_compare(const hittable *a, const hittable *b, int axis) {
   aabb box_a;
   aabb box_b;
 
-  if (!a->bounding_box(0, 0, box_a) || !b->bounding_box(0, 0, box_b))
+  if (!a->bounding_box(0, 0, box_a) || !b->bounding_box(0, 0, box_b)) {
     std::cerr << "No bounding box in bvh_node constructor.\n";
+  }
 
   return box_a.min()[axis] < box_b.min()[axis];
 }
@@ -39,7 +39,6 @@ public:
            float t1, rtx::random &r) {
 
     // pick a random axis to split objets left and right
-    // int axis = random_int(0, 2);
     int axis = r.random_int(0, 2);
     auto comparator = (axis == 0) ? box_x_compare
                                   : (axis == 1) ? box_z_compare : box_y_compare;
@@ -120,6 +119,4 @@ public:
   hittable *right;
   aabb box;
 };
-
 } // namespace rtx
-#endif // BVH_H_

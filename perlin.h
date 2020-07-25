@@ -1,5 +1,4 @@
-#ifndef PERLIN_H_
-#define PERLIN_H_
+#pragma once
 
 #include <math.h>
 
@@ -130,4 +129,3 @@ private:
 };
 
 } // namespace rtx
-#endif // PERLIN_H_

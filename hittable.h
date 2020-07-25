@@ -1,5 +1,4 @@
-#ifndef HITTABLE_H_
-#define HITTABLE_H_
+#pragma once
 
 #include "random.h"
 #include "ray.h"
@@ -38,4 +37,3 @@ public:
   virtual bool bounding_box(float t0, float t1, aabb &output_box) const = 0;
 };
 } // namespace rtx
-#endif // HITTABLE_H_

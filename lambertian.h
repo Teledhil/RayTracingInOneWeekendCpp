@@ -1,5 +1,4 @@
-#ifndef LAMBERTIAN_H_
-#define LAMBERTIAN_H_
+#pragma once
 
 #include "color.h"
 #include "hittable.h"
@@ -37,4 +36,3 @@ private:
   const texture *albedo_;
 };
 } // namespace rtx
-#endif // LAMBERTIAN_H_

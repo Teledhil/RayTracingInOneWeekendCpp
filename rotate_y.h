@@ -1,5 +1,4 @@
-#ifndef ROTATE_Y_H_
-#define ROTATE_Y_H_
+#pragma once
 
 #include <math.h>
 
@@ -96,4 +95,3 @@ private:
   aabb bbox_;
 };
 } // namespace rtx
-#endif // ROTATE_Y_H_

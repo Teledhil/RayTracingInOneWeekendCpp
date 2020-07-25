@@ -1,5 +1,4 @@
-#ifndef BOX_H_
-#define BOX_H_
+#pragma once
 
 #include <vector>
 
@@ -52,5 +51,3 @@ private:
   std::vector<material *> m_;
 };
 } // namespace rtx
-
-#endif // BOX_H_

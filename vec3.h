@@ -1,5 +1,4 @@
-#ifndef VEC3_H_
-#define VEC3_H_
+#pragma once
 
 #include <math.h>
 
@@ -138,7 +137,6 @@ vec3 unit_vector(vec3 v) {
   return v / v.length();
 }
 
-
 vec3 reflect(const vec3 &v, const vec3 &n) { return v - 2 * dot(v, n) * n; }
 vec3 refract(const vec3 &r_in, const vec3 &n, float etai_over_etat) {
   // Snell's Law.
@@ -154,4 +152,3 @@ vec3 refract(const vec3 &r_in, const vec3 &n, float etai_over_etat) {
 }
 
 } // namespace rtx
-# endif // VEC3_H_

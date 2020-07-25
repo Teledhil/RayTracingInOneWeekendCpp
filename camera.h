@@ -1,5 +1,4 @@
-#ifndef CAMERA_H_
-#define CAMERA_H_
+#pragma once
 
 #include <iostream>
 
@@ -56,4 +55,3 @@ private:
   float lens_radius_;
 };
 } // namespace rtx
-#endif // CAMERA_H_

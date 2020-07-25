@@ -1,5 +1,4 @@
-#ifndef XY_RECT_H_
-#define XY_RECT_H_
+#pragma once
 
 #include <utility>
 
@@ -18,11 +17,9 @@ public:
       : x0_(x0), x1_(x1), y0_(y0), y1_(y1), z_(z), m_(m) {
     if (x1 < x0) {
       std::swap(x0, x1);
-      // std::cerr << "Bad x0=" << x0 << ", x1=" << x1 << std::endl;
     }
     if (y1 < y0) {
       std::swap(y0, y1);
-      // std::cerr << "Bad y0=" << y0 << ", y1=" << y1 << std::endl;
     }
   }
   ~xy_rect() { delete m_; }
@@ -75,4 +72,3 @@ private:
   material *m_;
 };
 } // namespace rtx
-#endif // XY_RECT_H_

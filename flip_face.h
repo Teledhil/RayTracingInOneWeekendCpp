@@ -1,5 +1,4 @@
-#ifndef FLIP_FACE_H_
-#define FLIP_FACE_H_
+#pragma once
 
 #include "aabb.h"
 #include "hittable.h"
@@ -26,8 +25,7 @@ public:
     return h_->bounding_box(t0, t1, output_box);
   }
 
-  private:
-    hittable *h_;
-  };
-  }    // namespace rtx
-#endif // FLIP_FACE_H_
+private:
+  hittable *h_;
+};
+} // namespace rtx

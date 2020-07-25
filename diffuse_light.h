@@ -1,5 +1,4 @@
-#ifndef DIFFUSE_LIGHT_H_
-#define DIFFUSE_LIGHT_H_
+#pragma once
 
 #include "hittable.h"
 #include "material.h"
@@ -30,4 +29,3 @@ private:
   texture *emit_;
 };
 } // namespace rtx
-#endif // DIFFUSE_LIGHT_H_

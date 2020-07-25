@@ -1,5 +1,4 @@
-#ifndef RAY_H_
-#define RAY_H_
+#pragma once
 
 #include "vec3.h"
 
@@ -27,4 +26,3 @@ private:
 };
 
 } // namespace rtx
-#endif // RAY_H_

@@ -1,5 +1,4 @@
-#ifndef DIELECTRIC_H_
-#define DIELECTRIC_H_
+#pragma once
 
 #include "material.h"
 
@@ -31,7 +30,7 @@ public:
 
     if ((etai_over_etat * sin_theta > 1.0) ||
         (ran.random_float() < schlick(cos_theta, etai_over_etat))) {
-      // Reflection: Either the incidence angle is to great or the specular
+      // Reflection: Either the incidence angle is too great or the specular
       // reflection happens.
       vec3 reflected = reflect(unit_direction, rec.normal);
       // scattered = ray(rec.p, reflected);
@@ -70,4 +69,3 @@ private:
 };
 
 } // namespace rtx
-#endif // DIELECTRIC_H_

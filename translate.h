@@ -1,5 +1,4 @@
-#ifndef TRANSLATE_H_
-#define TRANSLATE_H_
+#pragma once
 
 #include "aabb.h"
 #include "hittable.h"
@@ -44,4 +43,3 @@ private:
 };
 
 } // namespace rtx
-#endif // TRANSLATE_H_

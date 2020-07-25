@@ -1,5 +1,6 @@
-#ifndef IMAGE_TEXTURE_H_
-#define IMAGE_TEXTURE_H_
+#pragma once
+
+#include <iostream>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -60,4 +61,3 @@ private:
 };
 
 } // namespace rtx
-#endif // IMAGE_TEXTURE_H_

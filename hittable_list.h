@@ -1,5 +1,4 @@
-#ifndef HITTABLE_LIST_H_
-#define HITTABLE_LIST_H_
+#pragma once
 
 #include <vector>
 
@@ -80,4 +79,3 @@ public:
 };
 
 } // namespace rtx
-#endif // HITTABLE_LIST_H_

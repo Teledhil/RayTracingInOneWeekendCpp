@@ -1,5 +1,4 @@
-#ifndef CONSTANT_MEDIUM_H_
-#define CONSTANT_MEDIUM_H_
+#pragma once
 
 #include "aabb.h"
 #include "hittable.h"
@@ -76,4 +75,3 @@ private:
   float neg_inv_density_;
 };
 } // namespace rtx
-#endif // CONSTANT_MEDIUM_H_

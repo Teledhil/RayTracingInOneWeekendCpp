@@ -1,5 +1,4 @@
-#ifndef SPHERE_H_
-#define SPHERE_H_
+#pragma once
 
 #include <math.h>
 
@@ -91,4 +90,3 @@ private:
 };
 
 } // namespace rtx
-#endif // SPHERE_H_

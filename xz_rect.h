@@ -1,5 +1,4 @@
-#ifndef RZ_RECT_H_
-#define RZ_RECT_H_
+#pragma once
 
 #include <utility>
 
@@ -18,11 +17,9 @@ public:
 
     if (x1 < x0) {
       std::swap(x0, x1);
-      // std::cerr << "Bad x0=" << x0 << ", x1=" << x1 << std::endl;
     }
     if (z1 < z0) {
       std::swap(z0, z1);
-      // std::cerr << "Bad z0=" << z0 << ", z1=" << z1 << std::endl;
     }
   }
   ~xz_rect() { delete m_; }
@@ -74,6 +71,4 @@ private:
   float z1_;
   material *m_;
 };
-
 } // namespace rtx
-#endif // RZ_RECT_H_

@@ -1,5 +1,4 @@
-#ifndef AABB_H_
-#define AABB_H_
+#pragma once
 
 #include "ray.h"
 #include "vec3.h"
@@ -38,4 +37,3 @@ aabb surrounding_box(const aabb &box0, const aabb &box1) {
   return aabb(small, big);
 }
 } // namespace rtx
-#endif // AABB_H_

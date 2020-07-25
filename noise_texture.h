@@ -1,5 +1,4 @@
-#ifndef NOISE_TEXTURE_H_
-#define NOISE_TEXTURE_H_
+#pragma once
 
 #include <math.h>
 
@@ -23,4 +22,3 @@ private:
   float scale_;
 };
 } // namespace rtx
-#endif // NOISE_TEXTURE_H_

@@ -1,5 +1,4 @@
-#ifndef SOLID_COLOR_H_
-#define SOLID_COLOR_H_
+#pragma once
 
 #include "texture.h"
 
@@ -23,4 +22,3 @@ private:
 };
 
 } // namespace rtx
-#endif // SOLID_COLOR_H_
