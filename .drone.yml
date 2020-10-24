@@ -6,6 +6,9 @@ steps:
 - name: build-image
   image: plugins/docker
   settings:
+    repo: teledhil/my_little_ray_tracer
+    dry_run: true
+    purge: true
     custom_dns: 192.168.1.7
     dockerfile: Dockerfile
     build_args:
