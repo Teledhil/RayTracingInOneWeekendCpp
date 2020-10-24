@@ -8,7 +8,7 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN sed -i '/deb-src/s/^# //' /etc/apt/sources.list \
  && apt update \
  && apt install -y \
-     clang++ \
+     clang \
  && rm -rf /var/lib/apt/lists/*
 
 COPY . /app/
