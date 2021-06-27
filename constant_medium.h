@@ -11,11 +11,13 @@
 namespace rtx {
 class constant_medium : public hittable {
 public:
-  constant_medium(hittable *h, texture *t, float density)
-      : h_(h), t_(new isotropic(t)), neg_inv_density_(-1 / density) {}
+  constant_medium(hittable *h, isotropic *t, float density)
+      : h_(h), t_(t), neg_inv_density_(-1 / density) {}
+  // constant_medium(hittable *h, texture *t, float density)
+  //    : h_(h), t_(new isotropic(t)), neg_inv_density_(-1 / density) {}
   ~constant_medium() {
     delete h_;
-    delete t_;
+    // delete t_;
   }
 
   bool hit(const ray &r, float t_min, float t_max, hit_record &rec,

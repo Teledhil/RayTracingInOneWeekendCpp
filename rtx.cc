@@ -24,6 +24,7 @@
 #include "translate.h"
 #include "utility.h"
 #include "vec3.h"
+#include "world.h"
 #include "xy_rect.h"
 #include "xz_rect.h"
 #include "yz_rect.h"
@@ -287,7 +288,7 @@ hittable_list cornell_box_with_fog(rtx::random &ran __attribute__((unused))) {
   world.add(new constant_medium(
       new sphere(point3(200, 200, 200), 100,
                  new lambertian(new solid_color(0.8, 0.8, 0.8))),
-      new solid_color(1, 1, 1), 0.01));
+      new isotropic(new solid_color(1, 1, 1)), 0.01));
   return world;
 }
 
@@ -355,12 +356,12 @@ hittable_list final_scene(rtx::random &ran) {
   world.add(new sphere(point3(360, 150, 145), 70, new dielectric(1.5)));
   world.add(new constant_medium(
       new sphere(point3(360, 150, 145), 70, new dielectric(1.5)),
-      new solid_color(0.2, 0.4, 0.9), 0.2));
+      new isotropic(new solid_color(0.2, 0.4, 0.9)), 0.2));
 
   // mist
   world.add(new constant_medium(
       new sphere(point3(0, 0, 0), 5000, new dielectric(1.5)),
-      new solid_color(1, 1, 1), 0.0001));
+      new isotropic(new solid_color(1, 1, 1)), 0.0001));
 
   // the earth
   material *earth_map = new lambertian(new image_texture("earthmap.jpg"));
@@ -594,20 +595,23 @@ int main() {
   // camera cam = cornell_box_camera();
   camera cam = final_scene_camera();
 
-  rtx::random scene_randomness;
+  // rtx::random scene_randomness;
 
   // World objects
   //
+  World w{};
   // hittable_list world = random_scene(scene_randomness);
   // hittable_list world = the_earth(scene_randomness);
   // hittable_list world = two_perlin_spheres(scene_randomness);
   // hittable_list world = cornell_box(scene_randomness);
   // hittable_list world = cornell_box_with_fog(scene_randomness);
   // hittable_list world = old_scene(scene_randomness);
-  hittable_list world = final_scene(scene_randomness);
-  std::cerr << "Building optimized world... ";
-  world.optimize_bvh(scene_randomness);
-  std::cerr << "Done" << std::endl;
+  // hittable_list world = final_scene(scene_randomness);
+  hittable_list world = w.final_scene();
+
+  // std::cerr << "Building optimized world... ";
+  // world.optimize_bvh(scene_randomness);
+  // std::cerr << "Done" << std::endl;
 
   // simple_rtx(cam, SAMPLES_PER_PIXEL, MAX_DEPTH, world);
   // parallelize_by_samples(cam, SAMPLES_PER_PIXEL, MAX_DEPTH, world);

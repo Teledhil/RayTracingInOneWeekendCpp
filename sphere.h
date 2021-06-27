@@ -15,7 +15,7 @@ public:
   sphere(point3 c, float r, material *m)
       : center_(c), radius_(r), material_(m) {}
   ~sphere() {
-    delete material_;
+    // delete material_;
   }
 
   bool hit(const ray &r, float t_min, float t_max, hit_record &rec,

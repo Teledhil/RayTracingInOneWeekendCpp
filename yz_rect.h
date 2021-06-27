@@ -22,7 +22,9 @@ public:
       std::swap(z0, z1);
     }
   }
-  ~yz_rect() { delete m_; }
+  ~yz_rect() {
+    // delete m_;
+  }
 
   bool hit(const ray &r, float t_min, float t_max, hit_record &rec,
            rtx::random &ran __attribute__((unused))) const override {
