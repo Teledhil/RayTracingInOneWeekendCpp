@@ -42,16 +42,16 @@ public:
   int getHeight() const { return HEIGHT; }
 
 private:
-  static constexpr int WIDTH = 1280;
-  static constexpr int HEIGHT = 720;
-  static constexpr float ASPECT_RATIO = float(WIDTH) / float(HEIGHT);
-  static constexpr float FOCAL_LENGTH = 1.0;
+ static constexpr int WIDTH = 1920;
+ static constexpr int HEIGHT = 1080;
+ static constexpr float ASPECT_RATIO = float(WIDTH) / float(HEIGHT);
+ static constexpr float FOCAL_LENGTH = 1.0;
 
-  point3 origin_;
-  point3 lower_left_corner_;
-  vec3 horizontal_;
-  vec3 vertical_;
-  vec3 u_, v_, w_;
-  float lens_radius_;
+ point3 origin_;
+ point3 lower_left_corner_;
+ vec3 horizontal_;
+ vec3 vertical_;
+ vec3 u_, v_, w_;
+ float lens_radius_;
 };
 } // namespace rtx

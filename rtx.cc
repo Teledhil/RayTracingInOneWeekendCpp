@@ -585,8 +585,8 @@ camera final_scene_camera() {
 }
 
 int main() {
-  static constexpr int SAMPLES_PER_PIXEL = 1000;
-  static constexpr int MAX_DEPTH = 8;
+  static constexpr int SAMPLES_PER_PIXEL = 500;
+  static constexpr int MAX_DEPTH = 20;
 
   // camera cam = random_scene_camera();
   // camera cam = two_perlin_spheres_camera();
