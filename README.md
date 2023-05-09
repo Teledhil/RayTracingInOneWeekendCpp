@@ -7,3 +7,15 @@
 My multithreaded implementation of the [_Ray Tracing in One Weekend_](https://raytracing.github.io/books/RayTracingInOneWeekend.html)
 and the [_Ray Tracing: The Next Week_](https://raytracing.github.io/books/RayTracingTheNextWeek.html)
 books.
+
+## Build
+
+```
+make
+```
+
+## Run
+
+```
+./rtx > image.ppm
+```
